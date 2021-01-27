@@ -1,0 +1,24 @@
+{
+  "name": "cs300-messaging-app",
+  "version": "1.0.0",
+  "description": "CS300 product",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ScherrerMichael/CS300-Messaging-App.git"
+  },
+  "keywords": [
+    "node",
+    "api",
+    "messages"
+  ],
+  "author": "scherrer@pdx.edu",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/ScherrerMichael/CS300-Messaging-App/issues"
+  },
+  "homepage": "https://github.com/ScherrerMichael/CS300-Messaging-App#readme"
+}
