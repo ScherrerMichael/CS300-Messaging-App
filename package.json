@@ -20,5 +20,8 @@
   "bugs": {
     "url": "https://github.com/ScherrerMichael/CS300-Messaging-App/issues"
   },
-  "homepage": "https://github.com/ScherrerMichael/CS300-Messaging-App#readme"
+  "homepage": "https://github.com/ScherrerMichael/CS300-Messaging-App#readme",
+  "dependencies": {
+    "express": "^4.17.1"
+  }
 }
