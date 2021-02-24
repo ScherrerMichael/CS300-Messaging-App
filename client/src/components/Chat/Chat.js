@@ -74,7 +74,7 @@ const Chat = () => {
                 </Col>
             </Row>
 
-                <p className ="status">status</p>
+                {/* <p className ="status">status</p> */}
 
         </Container>
     )
