@@ -2,11 +2,11 @@ const express = require('express');
 const router = express.Router();
 const mongoose =require('mongoose');
 
-const User = require('../models/user');
+const Message = require('../models/message');
 
-//fetch all users
+//fetch all messages
 router.get('/', (req, res, next) => {
-    User.find()
+    Message.find()
     .exec()
     .then(docs => {
         console.log(docs);
@@ -27,21 +27,21 @@ router.get('/', (req, res, next) => {
 });
 
 router.post('/', (req, res, next) => {
-    const user = new User({
+    console.log(req.body);
+    const message = new Message({
         _id: new mongoose.Types.ObjectId(),
-        user_name: req.body.user_name,
-        avatar: req.body.avatar,
-        email: req.body.email,
-        password: req.body.password,
-        is_active: req.body.is_active
+        user: req.body.User,
+        message_body: req.body.message_body,
+        message_status: req.body.message_status,
+        created_at: req.body.created_at
     })
     
-    user.save()
+    message.save()
         .then( result => {
             console.log(result);
         res.status(201).json({
-            messsage: 'created new user',
-            createdUser: result
+            messsage: 'Handling POST requests to /messages',
+            created_message: result
     })
         })
         .catch(err => {
@@ -53,34 +53,11 @@ router.post('/', (req, res, next) => {
 
 });
 
-router.post('/:userId/rooms', (req, res, next) => {
+//fetch a single message based on id
+router.get('/:messageId', (req, res, next) =>{
+    const id = req.params.messageId;
 
-    const id = req.params.userId;
-
-    User.findById(id)
-    
-    user.save()
-        .then( result => {
-            console.log(result);
-        res.status(201).json({
-            messsage: 'created new user',
-            createdUser: result
-    })
-        })
-        .catch(err => {
-            console.log(err);
-            res.status(501).json({
-                error: err
-            })
-        });
-
-});
-
-//fetch a single user based on id
-router.get('/:userId', (req, res, next) =>{
-    const id = req.params.userId;
-
-    User.findById(id)
+    Message.findById(id)
     .exec()
     .then(doc => {
         console.log("From database", doc);
@@ -98,15 +75,15 @@ router.get('/:userId', (req, res, next) =>{
     });
 });
 
-router.patch('/:userId', (req, res, next) => {
-    const id = req.params.userId;
+router.patch('/:messageId', (req, res, next) => {
+    const id = req.params.messageId;
     const updateOps ={};
 
     for(const ops of req.body){
         updateOps[ops.propName] = ops.value;
     }
 
-    User.update({_id: id}, {$set: updateOps})
+    Message.update({_id: id}, {$set: updateOps})
     .exec()
     .then( result => {
         res.status(200).json(result)
@@ -119,9 +96,9 @@ router.patch('/:userId', (req, res, next) => {
     });
 })
 
-router.delete('/:userId', (req, res, next) => {
-    const id = req.params.userId;
-    User.remove({_id: id})
+router.delete('/:messageId', (req, res, next) => {
+    const id = req.params.messageId;
+    Message.remove({_id: id})
     .exec()
     .then(result => {
         res.status(200).json(result);

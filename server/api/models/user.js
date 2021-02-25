@@ -2,8 +2,12 @@ const mongoose = require('mongoose');
 
 const userSchema = mongoose.Schema({
     _id: mongoose.Schema.Types.ObjectId,
-    name: String,
-    status: String
+    user_name: String,
+    avatar: String,
+    email: String,
+    password: String,
+    friends: [userSchema],
+    is_active: {type: Boolean, default: false}
 });
 
-module.exports = mongoose.model('Product', userSchema);
+module.exports = mongoose.model('User', userSchema);

@@ -5,7 +5,8 @@ const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
 
 const userRoutes = require('./api/routes/users');
-const groupRoutes = require('./api/routes/groups');
+const roomRoutes = require('./api/routes/rooms');
+const messagesRoutes = require('./api/routes/messages');
 
 app.use(morgan('dev'));
 app.use(bodyParser.urlencoded({extended: false}));
@@ -36,7 +37,8 @@ app.use((req, res, next) => {
 
 //Routes that will handle http requests.
 app.use('/users', userRoutes);
-app.use('/groups', groupRoutes);
+app.use('/rooms', roomRoutes);
+app.use('/messages', messagesRoutes);
 
 
 // error handling for bad requests.
