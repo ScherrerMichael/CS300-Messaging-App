@@ -6,7 +6,7 @@ const userSchema = mongoose.Schema({
     avatar: String,
     email: String,
     password: String,
-    friends: [userSchema],
+    friends: [String],
     is_active: {type: Boolean, default: false}
 });
 

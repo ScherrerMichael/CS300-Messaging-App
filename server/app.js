@@ -22,9 +22,8 @@ mongoose.connect('mongodb+srv://admin:'
 
 //for cors errors
 app.use((req, res, next) => {
-    res.header('Acess-Control-Allow-Origin', '*');
-    res.header('Acess-Control-Allow-Headers', 'Origin, X-Requsted-With',
-    "Content-Type, Accept, Authorization");
+    res.header('Access-Control-Allow-Origin', '*');
+    res.header('Access-Control-Allow-Headers', 'Origin, X-Requsted-With,Content-Type, Accept, Authorization');
 
     if(req.method === 'OPTIONS') {
         res.header('Acess-Control-Allow-Methods', 'PUT, POST, PATCH', 
