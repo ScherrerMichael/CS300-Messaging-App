@@ -7,12 +7,22 @@ import Container from 'react-bootstrap/Container';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 import Button from 'react-bootstrap/Button';
+import Menu from './Menu';
 
 const Chat = () => {
 
-    const {currentUser, logout} = useAuth();
+    const {currentUser, logout, postNewRoomFromUser} = useAuth();
     const [error, setError] = useState("");
     const history = useHistory();
+
+    async function handleAddRoom(){
+
+        try{
+            await postNewRoomFromUser();
+        } catch {
+            console.log("error with post room");
+        }
+    }
 
     async function handleLogout(){
         setError('');
@@ -46,14 +56,14 @@ const Chat = () => {
                         </Row>
 
                         <Row className="menu debug">
-                            <div>menu</div>
+                            {/* <Menu></Menu>  TODO: work on populating the left menu with rooms that contain the current user */}
                         </Row>
 
                         <Row className="add-item debug debug">
                             <Col></Col>
 
                             <Col>
-                                <Button className="button">                                
+                                <Button onClick={handleAddRoom}className="button">                                
                                     Add
                                 </Button>
                             </Col>

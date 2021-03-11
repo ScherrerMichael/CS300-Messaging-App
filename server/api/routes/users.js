@@ -3,6 +3,7 @@ const router = express.Router();
 const mongoose =require('mongoose');
 
 const User = require('../models/user');
+const Room = require('../models/room');
 
 //fetch all users
 router.get('/', (req, res, next) => {
@@ -26,9 +27,38 @@ router.get('/', (req, res, next) => {
     });
 });
 
+//fetch all rooms that contain a user Id.
+router.get('/rooms/:userId', (req, res, next) => {
+
+    const userId = req.params.userId;
+
+    Room.find({'owner.uid': userId})
+    .exec()
+    .then(docs => {
+        console.log(docs);
+        if(docs.length){
+            res.status(200).json({
+                message: 'rooms that contain user id: ' + userId,
+                result: docs,
+            });
+        } else {
+            res.status(404).json({
+                message: 'No entries found'
+            })
+        }
+    })
+    .catch(err => {
+        console.log(err)
+        res.status(500).json({
+            error: err
+        })
+    });
+});
+
 router.post('/', (req, res, next) => {
     const user = new User({
         _id: new mongoose.Types.ObjectId(),
+        uid: req.body.uid,
         user_name: req.body.user_name,
         avatar: req.body.avatar,
         email: req.body.email,
@@ -76,11 +106,11 @@ router.post('/:userId/rooms', (req, res, next) => {
 
 });
 
-//fetch a single user based on id
+//fetch a single user based on userId
 router.get('/:userId', (req, res, next) =>{
-    const id = req.params.userId;
+    const uid = req.params.userId;
 
-    User.findById(id)
+    User.findOne({uid:uid})
     .exec()
     .then(doc => {
         console.log("From database", doc);
@@ -88,7 +118,7 @@ router.get('/:userId', (req, res, next) =>{
             res.status(200).json(doc);
         } else {
             res.status(404).json({
-                message: 'No valid entry found for provided id.'
+                message: 'No valid entry found for provided uid.'
             })
         }
     })
@@ -106,7 +136,7 @@ router.patch('/:userId', (req, res, next) => {
         updateOps[ops.propName] = ops.value;
     }
 
-    User.update({_id: id}, {$set: updateOps})
+    User.update({uid: id}, {$set: updateOps})
     .exec()
     .then( result => {
         res.status(200).json(result)
@@ -121,7 +151,7 @@ router.patch('/:userId', (req, res, next) => {
 
 router.delete('/:userId', (req, res, next) => {
     const id = req.params.userId;
-    User.remove({_id: id})
+    User.remove({uid: id})
     .exec()
     .then(result => {
         res.status(200).json(result);

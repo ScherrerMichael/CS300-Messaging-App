@@ -10,23 +10,10 @@ const Signup = () => {
     const emailRef = useRef();
     const passwordRef = useRef();
     const passwordConfirmRef = useRef();
-    const {signup} = useAuth();
+    const {signup, postNewUser} = useAuth();
     const [error, setError] = useState("");
     const [loading, setLoading] = useState(false);
     const history = useHistory();
-
-    const tempUser = {
-        user_name: '',
-        avatar: '',
-        email: '',
-        friends: [],
-        is_active: true,
-        headers: {
-            'Content-Type': 'application/json;charset=UTF-8',
-            "Access-Control-Allow-Origin": "*",
-        }
-    }
-
 
     async function handleSubmit(e) {
         e.preventDefault();
@@ -44,16 +31,7 @@ const Signup = () => {
             await signup(emailRef.current.value, passwordRef.current.value);
 
             //send new user data to backend.
-            tempUser.email = emailRef.current.value;
-            axios.post(`${process.env.REACT_APP_MONGO_DB_PORT}/users/`, tempUser)
-            .then(res => {
-                console.log(res)
-            })
-            .catch(err => {
-                console.log(err);
-            });
-            //
-
+            postNewUser();
             history.push("/");
             } catch {
             setError("Failed to create and account");

@@ -28,6 +28,7 @@ router.get('/', (req, res, next) => {
     });
 });
 
+
 //POST a new room
 router.post('/', (req, res, next) => {
     const room = new Room({
@@ -53,6 +54,43 @@ router.post('/', (req, res, next) => {
                 error: err
             })
         });
+
+});
+
+//POST a new room, given the owners user id.
+router.post('/:userId', (req, res, next) => {
+    var userId = req.params.userId;
+    var room;
+    const user = new User();
+
+    User.findOne({uid: userId})
+    .exec()
+    .then(doc => { 
+        if(doc){
+        room = new Room({
+            _id: new mongoose.Types.ObjectId(),
+            owner: doc,
+        });
+        room.save()
+            .then( result => {
+                console.log(result);
+            res.status(201).json({
+                messsage: 'created new room with owner id' + userId,
+                createdRoom: result,
+        })
+            })
+            .catch(err => {
+                console.log(err);
+                res.status(501).json({
+                    error: err
+                })
+            });
+        } else {
+            res.status(404).json({
+                message: 'No user found'
+            })
+        }
+    });
 
 });
 
