@@ -1,27 +1,36 @@
-import React, {useState} from 'react';
+import React, {useState, useEffect} from 'react';
 import { useAuth } from '../../contexts/AuthContext';
 import { Link, useHistory } from 'react-router-dom';
 import style from './style.css'
 import 'bootstrap/dist/css/bootstrap.min.css'
+import Tab from 'react-bootstrap/Tab'
+import ListGroup from 'react-bootstrap/ListGroup'
 import Container from 'react-bootstrap/Container';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 import Button from 'react-bootstrap/Button';
-import Menu from './Menu';
+import axios from 'axios';
 
 const Chat = () => {
 
-    const {currentUser, logout, postNewRoomFromUser} = useAuth();
+    const {currentUser, logout, postNewRoomFromUser, getRoomsWithUser} = useAuth();
     const [error, setError] = useState("");
     const history = useHistory();
+    const [roomList, setRooms] = useState({
+        rooms: []
+    });
 
-    async function handleAddRoom(){
+    async function handleAddRoom(){ //TODO switch chat and change element of selected element
 
         try{
             await postNewRoomFromUser();
         } catch {
             console.log("error with post room");
         }
+    }
+
+    function handleSwitchRoom(id){
+        console.log(`room ${id} clicked`);
     }
 
     async function handleLogout(){
@@ -34,6 +43,19 @@ const Chat = () => {
             setError('Failed to logout');
         }
     }
+
+    //similar to componentdidmount
+    useEffect(() => {
+        axios.get(`${process.env.REACT_APP_MONGO_DB_PORT}/users/rooms/${currentUser.uid}`)
+        .then(res => {
+            //console.log(res)//
+            setRooms({rooms: res.data});
+            console.log(roomList.rooms.result[0].topic);
+        })
+        .catch(err => {
+            console.log(err);
+        });
+    }, [])
 
     return (
         <Container fluid className="main">
@@ -56,7 +78,20 @@ const Chat = () => {
                         </Row>
 
                         <Row className="menu debug">
-                            {/* <Menu></Menu>  TODO: work on populating the left menu with rooms that contain the current user */}
+                            <Tab.Container>
+                            <ListGroup>
+                                your rooms
+                                {
+                                    roomList.rooms.result?
+                                    roomList.rooms.result.map((room, index) => 
+                                    <ListGroup.Item action 
+                                        onClick={ () => handleSwitchRoom(index)} 
+                                        key={index}>{room.topic}
+                                        </ListGroup.Item>) :
+                                    <div>no rooms</div>
+                                }
+                            </ListGroup>
+                        </Tab.Container>
                         </Row>
 
                         <Row className="add-item debug debug">

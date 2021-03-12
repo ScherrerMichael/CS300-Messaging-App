@@ -70,6 +70,7 @@ router.post('/:userId', (req, res, next) => {
         room = new Room({
             _id: new mongoose.Types.ObjectId(),
             owner: doc,
+            topic: 'Room Name',
         });
         room.save()
             .then( result => {

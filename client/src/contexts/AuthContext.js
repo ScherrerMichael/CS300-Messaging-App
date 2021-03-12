@@ -101,14 +101,13 @@ export function AuthProvider({children}) {
 
         axios.get(`${process.env.REACT_APP_MONGO_DB_PORT}/users/rooms/${currentUser.uid}`)
         .then(res => {
-            console.log(res)
-            doc = res;
+            //console.log(res)
+            return res;
         })
         .catch(err => {
             console.log(err);
         });
 
-        return doc;
     }
 
     useEffect(() => {
