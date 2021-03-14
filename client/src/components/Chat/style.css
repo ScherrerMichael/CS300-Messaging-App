@@ -14,6 +14,7 @@
     margin-left: 25px;
     overflow: hidden;
     padding-right: 0;
+    padding: 0 !important;
 }
 
 .tab{
@@ -28,28 +29,41 @@
 }
 
 .tab-row{
-    height: 100%;
+    width: 100%;
+}
+
+
+.list-group-menu{
+    padding-right: 0px;
+    position: absolute;
+    border: 0 !important;
+    right: 0;
+    top: 100px;
+}
+
+.list-item-rooms{
+    /* background-color: cornsilk !important; */
 }
 
 .menu{
     background-color: rgb(105, 184, 236);
     height: 100%;
-    width: 300%;
+    width: 100%;
     overflow-y: scroll;
-    overflow-x: hidden;
 }
 
 .add-item{
     width: 100%;
-    /* height: 100%; */
+    height: 100%;
     background-color:aliceblue;
     bottom: 0;
     margin-left: 0 !important;
     margin-right: 0 !important;
 }
 
-.button{
-    bottom: 0;
+.add-room-btn{
+    position: absolute;
+    top: 740px;
 }
 
 .chat{
@@ -78,7 +92,9 @@
     padding-left: 0 !important;
 }
 
+/* the text messages in the chat */
 .message{
+    background-color: whitesmoke !important;
     padding-left: 15px;
 }
 

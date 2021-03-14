@@ -1,6 +1,7 @@
 import React, { useContext, useEffect, useState} from 'react';
 import axios from 'axios';
 import {auth} from '../firebase';
+import {useCookies} from 'react-cookie';
 
 const AuthContext = React.createContext();
 
@@ -11,6 +12,8 @@ export function useAuth(){
 export function AuthProvider({children}) {
 
     const [currentUser, setCurrentUser] = useState();
+    const [cookies, setCookie, removeCookie] = useCookies(['name']);
+    const [loading, setLoading] = useState(true);
 
     let axiosConfig = {
         headers: {
@@ -32,15 +35,29 @@ export function AuthProvider({children}) {
     }
 
     function signup(email, password){
-        return auth.createUserWithEmailAndPassword(email, password);
+        return auth.createUserWithEmailAndPassword(email, password).then((email) => {
+            let now = new Date();
+            now.setMonth(now.getMonth() + 1);
+            setCookie('name', email, {expires: now});
+        }).catch((error) =>{
+            console.log(error);
+        });
     }
 
     function login(email, password) {
-        return auth.signInWithEmailAndPassword(email, password);
+        return auth.signInWithEmailAndPassword(email, password).then((email) =>{
+            let now = new Date();
+            now.setMonth(now.getMonth() + 1);
+            setCookie('name', email, {expires: now});
+        }).catch((error) =>{
+            console.log(error);
+        });
     }
 
     function logout(){
-        return auth.signOut();
+        return auth.signOut().then(() =>{
+            removeCookie('name');
+        });
     }
 
     function resetPassword(email){
@@ -108,6 +125,7 @@ export function AuthProvider({children}) {
     useEffect(() => {
         const unsubscribe = auth.onAuthStateChanged(user => {
             setCurrentUser(user);
+            setLoading(false);
         });
         return unsubscribe;
     }, [])
@@ -116,6 +134,7 @@ export function AuthProvider({children}) {
 
     const value = {
         currentUser,
+        cookies,
         signup,
         login,
         postNewUser,
@@ -127,7 +146,7 @@ export function AuthProvider({children}) {
 
     return (
         <AuthContext.Provider value ={value}>
-            {children}
+            {!loading && children}
         </AuthContext.Provider>
 
     )

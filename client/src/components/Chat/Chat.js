@@ -19,7 +19,7 @@ import ListGroupItem from 'react-bootstrap/esm/ListGroupItem';
 let socket;
 
 const Chat = () => {
-    const { currentUser, logout, postNewRoomFromUser, getRoomsWithUser } = useAuth();
+    const { currentUser, logout, postNewRoomFromUser, cookies} = useAuth();
     const [show, setShow] = useState(false);
 
     const handleClose = () => setShow(false);
@@ -117,7 +117,6 @@ const Chat = () => {
                 console.log(err);
             });
 
-
         setRoomName('');
     }
 
@@ -168,15 +167,6 @@ const Chat = () => {
     }, [`${process.env.REACT_APP_MONGO_DB_PORT}`])
 
 
-
-    function CustomComponent({ children }) {
-        return (
-            <li className="list-group-item" onClick={() => { }}>
-                {children}
-            </li>
-        )
-    }
-
     return (
         <Container fluid className="main">
             <strong>{currentUser.email}</strong>
@@ -194,15 +184,16 @@ const Chat = () => {
                             <Tab eventKey="Rooms" title="Rooms">
                                 <Row className="menu">
                                     <Tab.Container>
-                                        <ListGroup className="w-100">
+                                        <ListGroup className="w-100 list-group-menu">
                                             {
                                                 roomList.rooms.result ?
                                                     roomList.rooms.result.map(room =>
                                                         <ListGroup.Item action
+                                                            className="list-item-rooms"
                                                             onClick={() => handleSwitchRoom(room._id)}
                                                             key={room._id}>{room.topic}
                                                         </ListGroup.Item>) :
-                                                    <div>no rooms</div>
+                                                    <div></div>
                                             }
                                         </ListGroup>
                                     </Tab.Container>
@@ -216,7 +207,7 @@ const Chat = () => {
                     <Row className="add-item">
                         <Col className="line"></Col>
                         <Col className="line">
-                            <Button onClick={handleShow} className="button">
+                            <Button onClick={handleShow} className="add-room-btn">
                                 Add
                                 </Button>
                         </Col>
