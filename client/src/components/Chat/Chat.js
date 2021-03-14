@@ -27,9 +27,13 @@ const Chat = () => {
 
     const [error, setError] = useState("");
     const history = useHistory();
+    const [tab, setTab] = useState('');
     const [roomList, setRooms] = useState({
         rooms: []
     });
+    const [friends, setFriends] = useState({
+        freinds: []
+    })
     const [messages, setMessages] = useState([]);
     const [room, setRoom] = useState('');
     const [roomName, setRoomName] = useState('');
@@ -38,6 +42,9 @@ const Chat = () => {
     const messageRef = useRef();
     const [message, setMessage] = useState({});
 
+    const handleTabChange=(tab)=>{
+        setTab(tab);
+    }
 
     useEffect(() => { // getting all rooms that the user is in
         let mounted = true;
@@ -55,7 +62,7 @@ const Chat = () => {
 
         return () => mounted = false;
 
-    }, [room, roomNameRef])
+    }, [room, roomNameRef, friends])
 
 
 
@@ -174,14 +181,29 @@ const Chat = () => {
             <Row className="main-row">
                 <Col xs="3" className="contacts debug">
                     <Row>
-                        <Tabs>
-                            <Tab eventKey="home" title="Home">
+                        <Tabs onSelect={handleTabChange}>
+                            <Tab eventKey={'home'} title="Home">
 
                             </Tab>
-                            <Tab eventKey="People" title="People">
-
+                            <Tab eventKey={'people'} title="People">
+                                <Row className="menu">
+                                    <Tab.Container>
+                                        <ListGroup className="w-100 list-group-menu">
+                                            {
+                                                roomList.rooms.result ?
+                                                    roomList.rooms.result.map(room =>
+                                                        <ListGroup.Item action
+                                                            className="list-item-rooms"
+                                                            onClick={() => handleSwitchRoom(room._id)}
+                                                            key={room._id}>{room.topic}
+                                                        </ListGroup.Item>) :
+                                                    <div></div>
+                                            }
+                                        </ListGroup>
+                                    </Tab.Container>
+                                </Row>
                             </Tab>
-                            <Tab eventKey="Rooms" title="Rooms">
+                            <Tab eventKey={'rooms'} title="Rooms">
                                 <Row className="menu">
                                     <Tab.Container>
                                         <ListGroup className="w-100 list-group-menu">
@@ -207,9 +229,13 @@ const Chat = () => {
                     <Row className="add-item">
                         <Col className="line"></Col>
                         <Col className="line">
-                            <Button onClick={handleShow} className="add-room-btn">
-                                Add
-                                </Button>
+                            {
+                                (tab === 'rooms' || tab === 'people')?
+                                <Button onClick={handleShow} className="add-room-btn">
+                                    Add
+                                    </Button>:
+                                    <div></div>
+                            }
                         </Col>
                         <Col className="line"></Col>
                     </Row>

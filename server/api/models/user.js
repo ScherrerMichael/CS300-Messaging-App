@@ -7,7 +7,10 @@ const userSchema = mongoose.Schema({
     avatar: String,
     email: String,
     password: String,
-    friends: [String],
+    friends: {
+        type: mongoose.Schema.ObjectId,
+        ref: 'userSchema'
+    },
     is_active: {type: Boolean, default: false}
 });
 

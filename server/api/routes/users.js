@@ -55,6 +55,35 @@ router.get('/rooms/:userId', (req, res, next) => {
     });
 });
 
+//TODO: fetch all friends of a user
+router.get('/:userId/friends', (req, res, next) => {
+
+    const userId = req.params.userId;
+
+    User.findOne({uid:uid})
+    .exec()
+    .then(doc => {
+        console.log(doc);
+        if(doc.length){
+            res.status(200).json({
+                message: 'found user: ' + userId,
+                result: doc,
+            });
+        } else {
+            res.status(404).json({
+                message: 'No entries found'
+            })
+        }
+    })
+    .catch(err => {
+        console.log(err)
+        res.status(500).json({
+            error: err
+        })
+    });
+});
+
+//POST a new user
 router.post('/', (req, res, next) => {
     const user = new User({
         _id: new mongoose.Types.ObjectId(),
