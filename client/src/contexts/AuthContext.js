@@ -75,13 +75,14 @@ export function AuthProvider({children}) {
         return 1;
     }
 
-    async function postNewRoomFromUser(){
+    async function postNewRoomFromUser(roomName){
 
         var currentUserId = currentUser.uid;
 
-        axios.post(`${process.env.REACT_APP_MONGO_DB_PORT}/rooms/${currentUserId}`)
+
+        axios.post(`${process.env.REACT_APP_MONGO_DB_PORT}/rooms/${currentUserId}`, {topic: roomName})
         .then(res => {
-            console.log(res)
+            //console.log(res)
         })
         .catch(err => {
             console.log(err);

@@ -1,22 +1,30 @@
-import React, {useState, useEffect, useRef} from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useAuth } from '../../contexts/AuthContext';
 import { Link, useHistory } from 'react-router-dom';
 import style from './style.css'
 import 'bootstrap/dist/css/bootstrap.min.css'
 import Tab from 'react-bootstrap/Tab'
+import Tabs from 'react-bootstrap/Tabs'
 import ListGroup from 'react-bootstrap/ListGroup'
 import Container from 'react-bootstrap/Container';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 import Button from 'react-bootstrap/Button';
 import Form from 'react-bootstrap/Form';
+import Modal from 'react-bootstrap/Modal';
 import axios from 'axios';
 import io from 'socket.io-client'
+import ListGroupItem from 'react-bootstrap/esm/ListGroupItem';
 
-let  socket;
+let socket;
 
 const Chat = () => {
-    const {currentUser, logout, postNewRoomFromUser, getRoomsWithUser} = useAuth();
+    const { currentUser, logout, postNewRoomFromUser, getRoomsWithUser } = useAuth();
+    const [show, setShow] = useState(false);
+
+    const handleClose = () => setShow(false);
+    const handleShow = () => setShow(true);
+
     const [error, setError] = useState("");
     const history = useHistory();
     const [roomList, setRooms] = useState({
@@ -24,23 +32,34 @@ const Chat = () => {
     });
     const [messages, setMessages] = useState([]);
     const [room, setRoom] = useState('');
+    const [roomName, setRoomName] = useState('');
+    const roomNameRef = useRef();
     const formRef = useRef();
     const messageRef = useRef();
     const [message, setMessage] = useState({});
 
-    useEffect(() =>{ // getting all rooms that the user is in
+
+    useEffect(() => { // getting all rooms that the user is in
+        let mounted = true;
+
         axios.get(`${process.env.REACT_APP_MONGO_DB_PORT}/users/rooms/${currentUser.uid}`)
-        .then(res => {
-            //console.log(res)//
-            setRooms({rooms: res.data});
-        })
-        .catch(err => {
-            console.log(err);
-        });
-    }, [])
+            .then(res => {
+                if (mounted) {
+                    //console.log(res)//
+                    setRooms({ rooms: res.data });
+                }
+            })
+            .catch(err => {
+                console.log(err);
+            });
+
+        return () => mounted = false;
+
+    }, [room, roomNameRef])
 
 
-    function handleReset(){
+
+    function handleReset() {
         formRef.current.reset(); //reset the value of the form stuff
         setMessage({});
     }
@@ -48,46 +67,61 @@ const Chat = () => {
     async function handleSubmit(e) { //post a message to the room
         e.preventDefault();
 
-        const messageToSend = {
-            uid: currentUser.uid,
-            message_body: messageRef.current.value,
+        if (messageRef.current.value !== '') {
+
+            const messageToSend = {
+                uid: currentUser.uid,
+                message_body: messageRef.current.value,
+            }
+
+            axios.post(`${process.env.REACT_APP_MONGO_DB_PORT}/rooms/${room}/messages`, messageToSend)
+                .then(res => {
+                    setMessage(res.data.result);
+                })
+                .catch(err => {
+                    console.log(err);
+                });
+
+            socket.emit('sendMessage', { message }, ({ callback }) => {
+                //console.log(callback);
+            });
+
+            handleReset();
+        } else {
+            console.log('empty input');
+            return null;
         }
 
-        axios.post(`${process.env.REACT_APP_MONGO_DB_PORT}/rooms/${room}/messages`, messageToSend)
-        .then(res => {
-            setMessage(res.data.result);
-        })
-        .catch(err => {
-            console.log(err);
-        });
-
-        socket.emit('sendMessage', {message}, ({callback}) => {
-            //console.log(callback);
-        });
-
-        handleReset();
-        console.log(messages);
     }
 
-    async function handleAddRoom(){ //TODO switch chat and change element of selected element
+    async function handleAddRoom() { //TODO switch chat and change element of selected element
 
-        try{
-            await postNewRoomFromUser();
+        setRoomName(roomNameRef.current.value);
+
+        try {
+            await postNewRoomFromUser(roomNameRef.current.value);
         } catch {
             console.log("error with post room");
         }
 
+
+        //update for all rooms
         axios.get(`${process.env.REACT_APP_MONGO_DB_PORT}/users/rooms/${currentUser.uid}`)
-        .then(res => {
-            //console.log(res)//
-            setRooms({rooms: res.data});
-        })
-        .catch(err => {
-            console.log(err);
-        });
+            .then(res => {
+                //console.log(res)//
+                setRooms({ rooms: res.data });
+                setRoom(roomList.rooms.result[0]._id)
+                handleClose();
+            })
+            .catch(err => {
+                console.log(err);
+            });
+
+
+        setRoomName('');
     }
 
-    function handleSwitchRoom(roomId){
+    function handleSwitchRoom(roomId) {
         //console.log(`room ${roomId} clicked`);
         setRoom(roomId);
 
@@ -97,22 +131,21 @@ const Chat = () => {
     useEffect(() => {
         //update the room info (send get request and load messages of that room)
         axios.get(`${process.env.REACT_APP_MONGO_DB_PORT}/rooms/${room}`)
-        .then(res => {
-            //console.log(res.data.messages);
-            setMessages(res.data.messages);
-        })
-        .catch(err => {
-            console.log(err);
-        });
+            .then(res => {
+                setMessages(res.data.messages);
+            })
+            .catch(err => {
+                console.log(err);
+            });
     }, [message, room])
 
 
-    async function handleLogout(){
+    async function handleLogout() {
         setError('');
 
-        try{
+        try {
             await logout();
-            socket.off();
+            socket.disconnect();
             history.push('/login');
         } catch {
             setError('Failed to logout');
@@ -123,7 +156,7 @@ const Chat = () => {
     useEffect(() => {
         socket = io(`${process.env.REACT_APP_MONGO_DB_PORT}`);
 
-        socket.emit('join', currentUser.email, ({message}) => {
+        socket.emit('join', currentUser.email, ({ message }) => {
             console.log(message);
         });
 
@@ -136,6 +169,13 @@ const Chat = () => {
 
 
 
+    function CustomComponent({ children }) {
+        return (
+            <li className="list-group-item" onClick={() => { }}>
+                {children}
+            </li>
+        )
+    }
 
     return (
         <Container fluid className="main">
@@ -143,80 +183,105 @@ const Chat = () => {
             <Button variant="link" onClick={handleLogout}>Log out</Button>
             <Row className="main-row">
                 <Col xs="3" className="contacts debug">
-                        <Row>
-                            <Col xs="4" className="tab">
-                                Home
-                            </Col>
+                    <Row>
+                        <Tabs>
+                            <Tab eventKey="home" title="Home">
 
-                            <Col xs="4" className="tab">
-                                People
-                            </Col>
+                            </Tab>
+                            <Tab eventKey="People" title="People">
 
-                            <Col xs="4" className="tab">
-                                Groups
-                            </Col>
-                        </Row>
+                            </Tab>
+                            <Tab eventKey="Rooms" title="Rooms">
+                                <Row className="menu">
+                                    <Tab.Container>
+                                        <ListGroup className="w-100">
+                                            {
+                                                roomList.rooms.result ?
+                                                    roomList.rooms.result.map(room =>
+                                                        <ListGroup.Item action
+                                                            onClick={() => handleSwitchRoom(room._id)}
+                                                            key={room._id}>{room.topic}
+                                                        </ListGroup.Item>) :
+                                                    <div>no rooms</div>
+                                            }
+                                        </ListGroup>
+                                    </Tab.Container>
+                                </Row>
+                            </Tab>
+                        </Tabs>
 
-                        <Row className="menu debug">
-                            <Tab.Container>
-                            <ListGroup className="w-100">
-                                {
-                                    roomList.rooms.result?
-                                    roomList.rooms.result.map(room => 
-                                    <ListGroup.Item action 
-                                        onClick={ () => handleSwitchRoom(room._id)} 
-                                        key={room._id}>{room.topic}
-                                        </ListGroup.Item>) :
-                                    <div>no rooms</div>
-                                }
-                            </ListGroup>
-                        </Tab.Container>
-                        </Row>
+                    </Row>
 
-                        <Row className="add-item debug debug">
-                            <Col></Col>
 
-                            <Col>
-                                <Button onClick={handleAddRoom}className="button">                                
-                                    Add
+                    <Row className="add-item">
+                        <Col className="line"></Col>
+                        <Col className="line">
+                            <Button onClick={handleShow} className="button">
+                                Add
                                 </Button>
-                            </Col>
-
-                            <Col></Col>
-                        </Row>
+                        </Col>
+                        <Col className="line"></Col>
+                    </Row>
                 </Col>
 
                 <Col className="chat debug">
 
                     <Row className="messages">
-                            <ListGroup className="w-100">
-                                {
-                                    messages?
-                                    messages.map(message => 
-                                    <div className="w-100 message" key={message._id}>{message.message_body}</div>):
+                        <ListGroup className="w-100">
+                            {
+                                messages ?
+                                    messages.map(message =>
+
+                                        <ListGroupItem header="yo" className="w-100 message" key={message._id}>
+                                            {/* <div>{message.uid}</div> TODO maybe include user in message  */}
+                                            {message.message_body}
+                                        </ListGroupItem>) :
                                     <div>no messages</div>
-                                }
-                            </ListGroup>
+                            }
+                        </ListGroup>
                     </Row>
 
                     <Row>
-                <Form ref={formRef} onSubmit={handleSubmit} className="text-box">
-                    <Form.Row>
-                        <Col className="form-text-field">
-                        <Form.Group id="Message">
-                            <Form.Control className="w-100 message-field" type="text" ref={messageRef} />
-                        </Form.Group>
-                        </Col>
-                        <Col xs='1'className="form-button-submit">
-                            <Button className="w-100" type="submit">Send</Button>
-                        </Col>
-                    </Form.Row>
-                </Form>
+                        <Form ref={formRef} onSubmit={handleSubmit} className="text-box">
+                            <Form.Row>
+                                <Col className="form-text-field">
+                                    <Form.Group id="Message">
+                                        <Form.Control className="w-100 message-field" type="text" ref={messageRef} />
+                                    </Form.Group>
+                                </Col>
+                                <Col xs='1' className="form-button-submit">
+                                    <Button className="w-100" type="submit">Send</Button>
+                                </Col>
+                            </Form.Row>
+                        </Form>
                     </Row>
                 </Col>
             </Row>
 
-                {/* <p className ="status">status</p> */}
+            {/* <p className ="status">status</p> */}
+
+            <Modal show={show} onHide={handleClose}>
+                <Modal.Header closeButton>
+                    <Modal.Title>Create new Room</Modal.Title>
+                </Modal.Header>
+                <Modal.Body>
+
+                    <Form onSubmit={handleSubmit} className="text-box">
+                        <Form.Group id="Message">
+                            <Form.Control className="w-100 message-field" type="text" ref={roomNameRef} />
+                        </Form.Group>
+                    </Form>
+
+                </Modal.Body>
+                <Modal.Footer>
+                    <Button variant="secondary" onClick={handleClose}>
+                        Close
+                        </Button>
+                    <Button variant="primary" type="submit" onClick={handleAddRoom}>
+                        Save Changes
+                        </Button>
+                </Modal.Footer>
+            </Modal>
 
         </Container>
     )

@@ -60,6 +60,7 @@ router.post('/', (req, res, next) => {
 //POST a new room, given the owners user id.
 router.post('/:userId', (req, res, next) => {
     var userId = req.params.userId;
+    var roomTopic = req.body.topic;
     var room;
     const user = new User();
 
@@ -70,7 +71,7 @@ router.post('/:userId', (req, res, next) => {
         room = new Room({
             _id: new mongoose.Types.ObjectId(),
             owner: doc,
-            topic: 'Room Name',
+            topic: roomTopic,
         });
         room.save()
             .then( result => {
