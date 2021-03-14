@@ -103,7 +103,7 @@ router.post('/:roomId/messages', async (req, res, next) => {
 
         const message = new Message({
             _id: new mongoose.Types.ObjectId(),
-            user: req.body.User,
+            uid: req.body.uid,
             message_body: req.body.message_body,
             message_status: req.body.message_status,
             created_at: req.body.created_at
@@ -113,10 +113,9 @@ router.post('/:roomId/messages', async (req, res, next) => {
             messages: message
         }});
 
-        console.log(result);
         res.status(201).json({
             message: "message added to room",
-            result: result
+            result: message
         })
 
     } catch(err) {
@@ -125,6 +124,7 @@ router.post('/:roomId/messages', async (req, res, next) => {
         })
     }
 });
+
 
 //POST a new User in an existing room
 router.post('/:roomId/users', async (req, res, next) => {

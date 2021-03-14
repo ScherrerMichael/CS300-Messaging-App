@@ -53,7 +53,7 @@ router.post('/', (req, res, next) => {
 
 });
 
-//fetch a single message based on id
+//GET a Message by id, found within a room
 router.get('/:messageId', (req, res, next) =>{
     const id = req.params.messageId;
 

@@ -61,8 +61,23 @@
 }
 
 .text-box{
-    background-color: rgb(239, 240, 240);
-    height: 5%;
+    width: 100%;
+}
+
+.form-control{
+    border-radius: 0 !important
+
+}
+
+.form-text-field{
+    padding-right: 0 !important;
+}
+.form-button-submit{
+    padding-left: 0 !important;
+}
+
+.message{
+    /* height: 10px; */
 }
 
 .status{

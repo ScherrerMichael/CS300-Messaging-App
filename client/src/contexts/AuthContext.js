@@ -31,12 +31,6 @@ export function AuthProvider({children}) {
         }
     }
 
-    const tempRoom = {
-        owner: '',
-        topic: '',
-        users: '',
-    }
-
     function signup(email, password){
         return auth.createUserWithEmailAndPassword(email, password);
     }
