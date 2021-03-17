@@ -34,11 +34,12 @@ export function AuthProvider({children}) {
         }
     }
 
-    function signup(email, password){
-        return auth.createUserWithEmailAndPassword(email, password).then((email) => {
-            let now = new Date();
-            now.setMonth(now.getMonth() + 1);
-            setCookie('name', email, {expires: now});
+    function signup(email, password, displayName){
+        return auth.createUserWithEmailAndPassword(email, password)
+        .then(function(result) {
+            return result.user.updateProfile({
+                displayName: displayName
+            })
         }).catch((error) =>{
             console.log(error);
         });
@@ -64,30 +65,24 @@ export function AuthProvider({children}) {
         return auth.sendPasswordResetEmail(email);
     }
 
-    async function postNewUser(){
+    async function postNewUser(displayName){
         var user = auth.currentUser;
-        var name, email, uid;
 
-        if(user != null)
+        if(user !== null)
         {
-            name = user.displayName;
-            email = user.email;
-            uid = user.uid;
+            axios.post(`${process.env.REACT_APP_MONGO_DB_PORT}/users/`, {
+                email: user.email,
+                uid: user.uid,
+                user_name: user.displayName
+            })
+            .then(res => {
+                console.log(res)
+            })
+            .catch(err => {
+                console.log(err);
+            });
         }
-        
-        tempUser.name = name;
-        tempUser.email = email;
-        tempUser.uid = uid;
 
-        console.log("uid: " + uid);
-        
-        axios.post(`${process.env.REACT_APP_MONGO_DB_PORT}/users/`, tempUser)
-        .then(res => {
-            console.log(res)
-        })
-        .catch(err => {
-            console.log(err);
-        });
 
         return 1;
     }

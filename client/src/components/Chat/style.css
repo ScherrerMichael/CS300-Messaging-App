@@ -29,7 +29,7 @@
 }
 
 .tab-row{
-    width: 100%;
+    background-color: aliceblue;
 }
 
 
@@ -67,8 +67,25 @@
 }
 
 .chat{
-    margin-top: 50px;
+    margin-top: 90px;
     margin-right: 25px;
+}
+
+
+.chat-info{
+    margin-top: 20px;
+    position: absolute;
+    height: 50px;
+}
+
+.small-font{
+    font-size: medium;
+}
+
+.invite-chat{
+    position: absolute;
+    left: 210px;
+    bottom: 5px;
 }
 
 .messages{

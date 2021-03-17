@@ -60,31 +60,32 @@ router.get('/:userId/friends', (req, res, next) => {
 
     const userId = req.params.userId;
 
-    User.findOne({uid:uid})
+    User.findOne({uid:userId})
+    .select('friends')
     .exec()
     .then(doc => {
-        console.log(doc);
-        if(doc.length){
+        console.log("From database", doc);
+        if(doc){
             res.status(200).json({
-                message: 'found user: ' + userId,
-                result: doc,
+                uid: userId,
+                result: doc
             });
         } else {
             res.status(404).json({
-                message: 'No entries found'
+                message: 'No valid entry found for provided uid.'
             })
         }
     })
     .catch(err => {
-        console.log(err)
-        res.status(500).json({
-            error: err
-        })
+        console.log(err);
+        res.status(500).json({error: err})
     });
+
 });
 
 //POST a new user
 router.post('/', (req, res, next) => {
+
     const user = new User({
         _id: new mongoose.Types.ObjectId(),
         uid: req.body.uid,
@@ -92,6 +93,7 @@ router.post('/', (req, res, next) => {
         avatar: req.body.avatar,
         email: req.body.email,
         password: req.body.password,
+        friends: req.body.friends,
         is_active: req.body.is_active
     })
     
@@ -110,6 +112,67 @@ router.post('/', (req, res, next) => {
             })
         });
 
+});
+
+//POST a new friend into an existing user
+router.post('/:userId/add-friend', (req, res, next) => {
+
+    //if user to add accepts, update both users to 'friends' code
+
+    const from = req.params.userId;
+    const to = req.body.user_name;
+
+    //find current user
+    User.findOne({uid:from})
+    .exec()
+    .then(sender => {
+        if(sender){
+            User.findOne({user_name:to})
+            .exec()
+            .then(reciever => {
+                if(reciever){
+                    //found user to add.
+                    //add bothe user into each others friends
+                    //update the added user with 'requested' code, 
+                    //update current user with 'pending' code
+
+                    sender.friends.push({reciever, status: 0});
+                    sender.save()
+
+                    reciever.friends.push({sender, status: 1});
+                    reciever.save();
+
+                    res.status(201).json({
+                        message: 'user added',
+                        requestUid: from,
+                        recipientUid: reciever.uid
+                    })
+
+
+                } else { //no reciepient found 
+                    res.status(404).json({
+                        message: 'No valid entry found for provided uid.'
+                    })
+                }
+            })
+            .catch(err => {
+                console.log(err);
+                res.status(500).json({
+                    message: 'could not find sender',
+                    error: err
+                })
+            });
+        } else { //user to send is not found.
+            res.status(404).json({
+                message: 'could not find reciever'
+            })
+        }
+    })
+    .catch(err => {
+        console.log(err);
+        res.status(500).json({error: err})
+    });
+    
 });
 
 router.post('/:userId/rooms', (req, res, next) => {

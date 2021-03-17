@@ -10,6 +10,7 @@ const Signup = () => {
     const emailRef = useRef();
     const passwordRef = useRef();
     const passwordConfirmRef = useRef();
+    const userNameRef = useRef();
     const {signup, postNewUser} = useAuth();
     const [error, setError] = useState("");
     const [loading, setLoading] = useState(false);
@@ -28,7 +29,7 @@ const Signup = () => {
         try{
             setError("");
             setLoading(true);
-            await signup(emailRef.current.value, passwordRef.current.value);
+            await signup(emailRef.current.value, passwordRef.current.value, userNameRef.current.value);
 
             //send new user data to backend.
             postNewUser();
@@ -55,6 +56,10 @@ const Signup = () => {
                     <Form.Group id="email">
                         <Form.Label>Email</Form.Label>
                         <Form.Control type="email" ref={emailRef} required />
+                    </Form.Group>
+                    <Form.Group id="user-name">
+                        <Form.Label>User Name</Form.Label>
+                        <Form.Control type="text" ref={userNameRef} required />
                     </Form.Group>
                     <Form.Group id="password">
                         <Form.Label>Password</Form.Label>

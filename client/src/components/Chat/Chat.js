@@ -12,6 +12,7 @@ import Col from 'react-bootstrap/Col';
 import Button from 'react-bootstrap/Button';
 import Form from 'react-bootstrap/Form';
 import Modal from 'react-bootstrap/Modal';
+import Card from 'react-bootstrap/Card'
 import axios from 'axios';
 import io from 'socket.io-client'
 import ListGroupItem from 'react-bootstrap/esm/ListGroupItem';
@@ -37,7 +38,8 @@ const Chat = () => {
     const [messages, setMessages] = useState([]);
     const [room, setRoom] = useState('');
     const [roomName, setRoomName] = useState('');
-    const roomNameRef = useRef();
+    const [currentRoomName, setCurrentRoomname] = useState('');
+    const modalRef = useRef();
     const formRef = useRef();
     const messageRef = useRef();
     const [message, setMessage] = useState({});
@@ -62,7 +64,7 @@ const Chat = () => {
 
         return () => mounted = false;
 
-    }, [room, roomNameRef, friends])
+    }, [room, modalRef, friends])
 
 
 
@@ -103,26 +105,27 @@ const Chat = () => {
 
     async function handleAddRoom() { //TODO switch chat and change element of selected element
 
-        setRoomName(roomNameRef.current.value);
+        setRoomName(modalRef.current.value);
 
         try {
-            await postNewRoomFromUser(roomNameRef.current.value);
+            await postNewRoomFromUser(modalRef.current.value);
+
+            //update for all rooms
+            axios.get(`${process.env.REACT_APP_MONGO_DB_PORT}/users/rooms/${currentUser.uid}`)
+                .then(res => {
+                    //console.log(res)//
+                    setRooms({ rooms: res.data });
+                    setRoom(roomList.rooms.result[0]._id)
+                    handleClose();
+                })
+                .catch(err => {
+                    console.log(err);
+                });
+
         } catch {
             console.log("error with post room");
         }
 
-
-        //update for all rooms
-        axios.get(`${process.env.REACT_APP_MONGO_DB_PORT}/users/rooms/${currentUser.uid}`)
-            .then(res => {
-                //console.log(res)//
-                setRooms({ rooms: res.data });
-                setRoom(roomList.rooms.result[0]._id)
-                handleClose();
-            })
-            .catch(err => {
-                console.log(err);
-            });
 
         setRoomName('');
     }
@@ -130,6 +133,13 @@ const Chat = () => {
     function handleSwitchRoom(roomId) {
         //console.log(`room ${roomId} clicked`);
         setRoom(roomId);
+
+        let r = roomList.rooms.result.find( a => a._id === roomId)
+
+        if(r)
+        {
+            setCurrentRoomname(r.topic);
+        }
 
         //tell io that we are in a new 'room'
     }
@@ -158,6 +168,14 @@ const Chat = () => {
         }
     }
 
+    function handleAddUser(){
+
+    }
+
+    function handleInviteToRoom(){
+        
+    }
+
     //similar to componentdidmount
     useEffect(() => {
         socket = io(`${process.env.REACT_APP_MONGO_DB_PORT}`);
@@ -176,31 +194,35 @@ const Chat = () => {
 
     return (
         <Container fluid className="main">
-            <strong>{currentUser.email}</strong>
-            <Button variant="link" onClick={handleLogout}>Log out</Button>
+            <Row>
+                <Col md="6">
+                    <strong>{currentUser.displayName}</strong>
+                    <Button variant="link" onClick={handleLogout}>Log out</Button>
+                </Col>
+                <Col>
+                    <Card className="chat-info">
+                        <Card.Body>
+                            <h1 className="small-font">
+                            {currentRoomName}
+                            </h1>
+                            <Button className="invite-chat" onClick={handleInviteToRoom}>invite</Button>
+                            </Card.Body>
+                            </Card>
+                </Col>
+                <Col>
+                {/*  */}
+                </Col>
+            </Row>
             <Row className="main-row">
                 <Col xs="3" className="contacts debug">
-                    <Row>
+                    <Row className="tab-row">
                         <Tabs onSelect={handleTabChange}>
                             <Tab eventKey={'home'} title="Home">
 
                             </Tab>
                             <Tab eventKey={'people'} title="People">
                                 <Row className="menu">
-                                    <Tab.Container>
-                                        <ListGroup className="w-100 list-group-menu">
-                                            {
-                                                roomList.rooms.result ?
-                                                    roomList.rooms.result.map(room =>
-                                                        <ListGroup.Item action
-                                                            className="list-item-rooms"
-                                                            onClick={() => handleSwitchRoom(room._id)}
-                                                            key={room._id}>{room.topic}
-                                                        </ListGroup.Item>) :
-                                                    <div></div>
-                                            }
-                                        </ListGroup>
-                                    </Tab.Container>
+                                    {/* TODO: friends list */}
                                 </Row>
                             </Tab>
                             <Tab eventKey={'rooms'} title="Rooms">
@@ -243,6 +265,7 @@ const Chat = () => {
 
                 <Col className="chat debug">
 
+
                     <Row className="messages">
                         <ListGroup className="w-100">
                             {
@@ -279,13 +302,17 @@ const Chat = () => {
 
             <Modal show={show} onHide={handleClose}>
                 <Modal.Header closeButton>
-                    <Modal.Title>Create new Room</Modal.Title>
+                    {
+                        (tab === 'rooms')?
+                        <Modal.Title>Create new Room</Modal.Title>:
+                        <Modal.Title>Add User</Modal.Title>
+                    }
                 </Modal.Header>
                 <Modal.Body>
 
                     <Form onSubmit={handleSubmit} className="text-box">
                         <Form.Group id="Message">
-                            <Form.Control className="w-100 message-field" type="text" ref={roomNameRef} />
+                            <Form.Control className="w-100 message-field" type="text" ref={modalRef} />
                         </Form.Group>
                     </Form>
 
@@ -294,7 +321,11 @@ const Chat = () => {
                     <Button variant="secondary" onClick={handleClose}>
                         Close
                         </Button>
-                    <Button variant="primary" type="submit" onClick={handleAddRoom}>
+                    <Button variant="primary" type="submit" onClick={
+                        (tab === 'rooms')?
+                        handleAddRoom:
+                        handleAddUser
+                    }>
                         Save Changes
                         </Button>
                 </Modal.Footer>
