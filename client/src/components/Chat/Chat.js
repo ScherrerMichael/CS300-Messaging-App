@@ -259,8 +259,8 @@ const Chat = () => {
     return (
         <Container fluid className="main">
             <Row>
-                <Col md="6">
-                    <strong>{currentUser.displayName}</strong>
+                <Col md="6" className="user-header-back">
+                    <strong className="user-header">{currentUser.displayName}</strong>
                     <Button variant="link" onClick={handleLogout}>Log out</Button>
                 </Col>
                 <Col>
@@ -269,7 +269,7 @@ const Chat = () => {
                             <h1 className="small-font">
                             {currentRoomName}
                             </h1>
-                            <Button className="invite-chat" onClick={handleInviteToRoom}>invite</Button>
+                            {/* <Button className="invite-chat" onClick={handleInviteToRoom}>invite</Button> */}
                             </Card.Body>
                             </Card>
                 </Col>

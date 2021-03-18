@@ -2,10 +2,18 @@
     background-color: rgb(102, 38, 91);
     height: 100vh;
     padding: 0;
+    background-image: linear-gradient(rgba(0,0,0,0.1), rgba(0,0,0,0)), url('./vectorstock_20239401.png');
 }
 
 .main-row{
     height: 90vh;
+}
+
+.user-header{
+    color: aliceblue;
+}
+
+.user-header-back{
 }
 
 .contacts{
@@ -79,6 +87,7 @@
 }
 
 .small-font{
+    text-align: center;
     font-size: medium;
 }
 
@@ -91,6 +100,7 @@
 .messages{
     background-color: aliceblue;
     height: 95%;
+    border-radius: 20px 20px 0 0 ;
 }
 
 .row{
