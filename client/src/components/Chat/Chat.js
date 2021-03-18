@@ -31,7 +31,7 @@ const Chat = () => {
     const history = useHistory();
     const [tab, setTab] = useState('');
     const [roomList, setRooms] = useState({
-        rooms: []
+        rooms: [null]
     });
     const [friendsList, setFriends] = useState({
         friends: []
@@ -209,18 +209,24 @@ const Chat = () => {
             });
     }
 
-    function handleInviteToRoom(id){
+    function handleInviteToRoom(userId){
 
-                //     axios.get(`${process.env.REACT_APP_MONGO_DB_PORT}/rooms/${room}/${id}`)
-                //     .then(res => {
-                //         console.log(res)
-                //     })
-                //     .catch(err => {
-                //         console.log(err);
-                //     });
-                // setFriends()
+        console.log('room clicked')
 
-                console.log(id)
+        if(room)
+        {
+                   axios.post(`${process.env.REACT_APP_MONGO_DB_PORT}/rooms/${room}/add-user`,{
+                       uid: userId
+                   })
+                   .then(res => {
+                       console.log(res)
+                   })
+                   .catch(err => {
+                       console.log(err);
+                   });
+        } else {
+            console.log('You need to be in a room!');
+        }
     }
 
     //similar to componentdidmount
@@ -272,12 +278,11 @@ const Chat = () => {
                                     <Tab.Container>
                                         <ListGroup className="w-100 list-group-menu">
                                             {
-
-                                                     friendsList.friends?
+                                                     friendsList.friends.friends?
                                                      friendsList.friends.friends.map(friend =>
                                                          <ListGroup.Item action
                                                              className="list-item-rooms"
-                                                             onClick={() => handleInviteToRoom(friend._id)}
+                                                             onClick={() => handleInviteToRoom(friend.uid)}
                                                              key={room._id}>{friend.user_name}
                                                          </ListGroup.Item>) 
                                                          :

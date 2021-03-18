@@ -6,7 +6,24 @@ const Message = require('./message');
 const roomSchema = mongoose.Schema({
     _id: mongoose.Schema.Types.ObjectId,
     topic: String,
-    users: [User.schema],
+    users: [
+        {
+            user:{
+                type: mongoose.Schema.Types.ObjectId,
+                ref: 'User',
+            },
+
+            user_name: {
+                type: String,
+                ref: 'User'
+            },
+
+            uid: {
+                type: String,
+                ref: 'User'
+            }
+        }
+    ],
     messages: [Message.schema],
     owner: {type: User.schema, default: {}},
     updated_at: {type: Date, default: Date.now},

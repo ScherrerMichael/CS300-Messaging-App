@@ -32,7 +32,7 @@ router.get('/rooms/:userId', (req, res, next) => {
 
     const userId = req.params.userId;
 
-    Room.find({'owner.uid': userId})
+    Room.find({'$or': [{'owner.uid': userId}, {'users.uid': userId}]})
     .exec()
     .then(docs => {
         console.log(docs);
@@ -117,7 +117,7 @@ router.post('/:userId/add-friend', (req, res, next) => {
 
                     reciever.friends.push({
                         user_name: sender.user_name,
-                        uid: reciever.uid,
+                        uid: sender.uid,
                         status: 1
                     });
                     reciever.save();

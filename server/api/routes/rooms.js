@@ -130,27 +130,30 @@ router.post('/:roomId/messages', async (req, res, next) => {
 //POST a new User in an existing room
 router.post('/:roomId/add-user', async (req, res, next) => {
 
-        const userId = req.body._id; //database id NOT uid!!!
-        const roomId = req.params.roomId;
-    try{
+        const userId = req.body.uid;
+        const id = req.params.roomId;
 
-        User.findOne({'_id':userId})
+
+        User.findOne({'uid':userId})
         .exec()
         .then(user => {
             if(user){
 
-                Room.updateOne({_id: roomId}, {$push:{
-                    users: user
+                Room.updateOne({_id: id}, {$push:{
+                    users: user,
+                    user_name: user.user_name,
+                    uid: user.uid,
                 }})
-                .then(result =>{
-                    console.log(result);
+                .then(result => {
+
                     res.status(201).json({
                         message: "user added to room",
-                        result: result
                     })
-                });
+                })
+
 
             } else {
+                console.log('no user found');
                 res.status(404).json({
                     message: 'No valid entry found for provided uid.'
                 })
@@ -160,13 +163,6 @@ router.post('/:roomId/add-user', async (req, res, next) => {
             console.log(err);
             res.status(500).json({error: err})
         });
-
-
-    } catch(err) {
-        res.status(501).json({
-            error: err
-        })
-    }
 });
 
 //fetch a single room based on id
