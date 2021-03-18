@@ -14,6 +14,7 @@ import Form from 'react-bootstrap/Form';
 import Modal from 'react-bootstrap/Modal';
 import Card from 'react-bootstrap/Card';
 import Overlay from 'react-bootstrap/Overlay';
+import ScrollToBottom from 'react-scroll-to-bottom';
 import axios from 'axios';
 import io from 'socket.io-client'
 import ListGroupItem from 'react-bootstrap/esm/ListGroupItem';
@@ -344,18 +345,20 @@ const Chat = () => {
 
 
                     <Row className="messages">
-                        <ListGroup className="w-100 scrollable">
+                        <ScrollToBottom className="w-100">
+                        <ListGroup className="w-100">
                             {
                                 messages ?
                                     messages.map(message =>
+                                            <ListGroupItem header="yo" className="w-100 message" key={message._id}>
+                                                {/* <div>{message.uid}</div> TODO maybe include user in message  */}
+                                                {message.message_body}
+                                            </ListGroupItem>) :
+                                        <div>no messages</div>
 
-                                        <ListGroupItem header="yo" className="w-100 message" key={message._id}>
-                                            {/* <div>{message.uid}</div> TODO maybe include user in message  */}
-                                            {message.message_body}
-                                        </ListGroupItem>) :
-                                    <div>no messages</div>
                             }
                         </ListGroup>
+                        </ScrollToBottom>
                     </Row>
 
                     <Row>
