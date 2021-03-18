@@ -41,8 +41,8 @@
     top: 100px;
 }
 
-.list-item-rooms{
-    /* background-color: cornsilk !important; */
+.scrollable{
+    overflow-y: scroll !important;
 }
 
 .menu{
@@ -91,6 +91,10 @@
 .messages{
     background-color: aliceblue;
     height: 95%;
+}
+
+.row{
+    flex-wrap: nowrap !important;
 }
 
 .text-box{

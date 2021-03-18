@@ -102,17 +102,17 @@ const Chat = () => {
                 message_body: messageRef.current.value,
             }
 
-            axios.post(`${process.env.REACT_APP_MONGO_DB_PORT}/rooms/${room}/messages`, messageToSend)
-                .then(res => {
-                    setMessage(res.data.result);
-                })
-                .catch(err => {
-                    console.log(err);
-                });
+                     socket.emit('sendMessage', currentUser, room, messageToSend,({ callback }) => {
+                         setMessages([...messages, callback.message]);
+                         console.log(messages);
 
-            socket.emit('sendMessage', { message }, ({ callback }) => {
-                //console.log(callback);
-            });
+                        axios.post(`${process.env.REACT_APP_MONGO_DB_PORT}/rooms/${room}/messages`, messageToSend)
+                        .catch(err => {
+                            console.log(err);
+                        });
+
+                     });
+
 
             handleReset();
         } else {
@@ -135,11 +135,11 @@ const Chat = () => {
                     //console.log(res)//
                     setRooms({ rooms: res.data });
                     setRoom(roomList.rooms.result[0]._id)
-                    handleClose();
                 })
                 .catch(err => {
                     console.log(err);
                 });
+                    handleClose();
 
         } catch {
             console.log("error with post room");
@@ -158,6 +158,9 @@ const Chat = () => {
         if(r)
         {
             setCurrentRoomname(r.topic);
+            socket.emit('join', currentUser.displayName, r,({ message }) => {
+            console.log(message);
+        });
         }
 
         //tell io that we are in a new 'room'
@@ -172,7 +175,7 @@ const Chat = () => {
             .catch(err => {
                 //console.log(err);
             });
-    }, [message, room])
+    }, [room, 0])
 
 
     async function handleLogout() {
@@ -233,17 +236,24 @@ const Chat = () => {
     useEffect(() => {
         socket = io(`${process.env.REACT_APP_MONGO_DB_PORT}`);
 
-        socket.emit('join', currentUser.email, ({ message }) => {
-            console.log(message);
-        });
-
         return () => {
 
             socket.off();
         }
 
-    }, [`${process.env.REACT_APP_MONGO_DB_PORT}`])
+    }, [`${process.env.REACT_APP_MONGO_DB_PORT}`]);
 
+    useEffect(() => {
+
+        socket.on(`welcome`, (messageBody) =>{
+            console.log(messageBody);
+        })
+
+        socket.on('re', (result) =>{
+            setMessages( prevMessages => ([...prevMessages, result.message]));
+        })
+
+    }, []);
 
     return (
         <Container fluid className="main">
@@ -334,7 +344,7 @@ const Chat = () => {
 
 
                     <Row className="messages">
-                        <ListGroup className="w-100">
+                        <ListGroup className="w-100 scrollable">
                             {
                                 messages ?
                                     messages.map(message =>
