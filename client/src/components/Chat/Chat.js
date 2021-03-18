@@ -12,7 +12,8 @@ import Col from 'react-bootstrap/Col';
 import Button from 'react-bootstrap/Button';
 import Form from 'react-bootstrap/Form';
 import Modal from 'react-bootstrap/Modal';
-import Card from 'react-bootstrap/Card'
+import Card from 'react-bootstrap/Card';
+import Overlay from 'react-bootstrap/Overlay';
 import axios from 'axios';
 import io from 'socket.io-client'
 import ListGroupItem from 'react-bootstrap/esm/ListGroupItem';
@@ -32,9 +33,9 @@ const Chat = () => {
     const [roomList, setRooms] = useState({
         rooms: []
     });
-    const [friends, setFriends] = useState({
-        freinds: []
-    })
+    const [friendsList, setFriends] = useState({
+        friends: []
+    });
     const [messages, setMessages] = useState([]);
     const [room, setRoom] = useState('');
     const [roomName, setRoomName] = useState('');
@@ -54,18 +55,36 @@ const Chat = () => {
         axios.get(`${process.env.REACT_APP_MONGO_DB_PORT}/users/rooms/${currentUser.uid}`)
             .then(res => {
                 if (mounted) {
-                    //console.log(res)//
                     setRooms({ rooms: res.data });
                 }
             })
             .catch(err => {
-                console.log(err);
-            });
+                //console.log(err);
+            })
+        return () => mounted = false;
+
+    }, [room, modalRef, tab])
+
+
+    useEffect(() => { // getting all rooms that the user is in
+        let mounted = true;
+
+                    //update friends //this is ugly...
+                    axios.get(`${process.env.REACT_APP_MONGO_DB_PORT}/users/${currentUser.uid}`)
+                    .then(res => {
+                        if(mounted)
+                        {
+                            setFriends({friends: res.data})
+                        }
+                    })
+                    .catch(err => {
+                        console.log(err);
+                    });
+                
 
         return () => mounted = false;
 
-    }, [room, modalRef, friends])
-
+    }, [tab])
 
 
     function handleReset() {
@@ -151,7 +170,7 @@ const Chat = () => {
                 setMessages(res.data.messages);
             })
             .catch(err => {
-                console.log(err);
+                //console.log(err);
             });
     }, [message, room])
 
@@ -170,10 +189,38 @@ const Chat = () => {
 
     function handleAddUser(){
 
+        axios.post(`${process.env.REACT_APP_MONGO_DB_PORT}/users/${currentUser.uid}/add-friend`, {
+            user_name: modalRef.current.value
+        })
+            .then(() => {
+                    axios.get(`${process.env.REACT_APP_MONGO_DB_PORT}/users/${currentUser.uid}/friends`)
+                    .then(res => {
+                        //console.log(res)
+                        //setFriends({friendsList: res.data})
+                    })
+                    .catch(err => {
+                        console.log(err);
+                    });
+                setFriends()
+                handleClose();
+            })
+            .catch(err => {
+                console.log(err);
+            });
     }
 
-    function handleInviteToRoom(){
-        
+    function handleInviteToRoom(id){
+
+                //     axios.get(`${process.env.REACT_APP_MONGO_DB_PORT}/rooms/${room}/${id}`)
+                //     .then(res => {
+                //         console.log(res)
+                //     })
+                //     .catch(err => {
+                //         console.log(err);
+                //     });
+                // setFriends()
+
+                console.log(id)
     }
 
     //similar to componentdidmount
@@ -222,7 +269,22 @@ const Chat = () => {
                             </Tab>
                             <Tab eventKey={'people'} title="People">
                                 <Row className="menu">
-                                    {/* TODO: friends list */}
+                                    <Tab.Container>
+                                        <ListGroup className="w-100 list-group-menu">
+                                            {
+
+                                                     friendsList.friends?
+                                                     friendsList.friends.friends.map(friend =>
+                                                         <ListGroup.Item action
+                                                             className="list-item-rooms"
+                                                             onClick={() => handleInviteToRoom(friend._id)}
+                                                             key={room._id}>{friend.user_name}
+                                                         </ListGroup.Item>) 
+                                                         :
+                                                     <div>nothing</div>
+                                            }
+                                        </ListGroup>
+                                    </Tab.Container>
                                 </Row>
                             </Tab>
                             <Tab eventKey={'rooms'} title="Rooms">

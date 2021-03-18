@@ -55,34 +55,6 @@ router.get('/rooms/:userId', (req, res, next) => {
     });
 });
 
-//TODO: fetch all friends of a user
-router.get('/:userId/friends', (req, res, next) => {
-
-    const userId = req.params.userId;
-
-    User.findOne({uid:userId})
-    .select('friends')
-    .exec()
-    .then(doc => {
-        console.log("From database", doc);
-        if(doc){
-            res.status(200).json({
-                uid: userId,
-                result: doc
-            });
-        } else {
-            res.status(404).json({
-                message: 'No valid entry found for provided uid.'
-            })
-        }
-    })
-    .catch(err => {
-        console.log(err);
-        res.status(500).json({error: err})
-    });
-
-});
-
 //POST a new user
 router.post('/', (req, res, next) => {
 
@@ -136,10 +108,18 @@ router.post('/:userId/add-friend', (req, res, next) => {
                     //update the added user with 'requested' code, 
                     //update current user with 'pending' code
 
-                    sender.friends.push({reciever, status: 0});
+                    sender.friends.push({
+                        user_name: reciever.user_name,
+                        uid: reciever.uid,
+                        status: 0
+                        });
                     sender.save()
 
-                    reciever.friends.push({sender, status: 1});
+                    reciever.friends.push({
+                        user_name: sender.user_name,
+                        uid: reciever.uid,
+                        status: 1
+                    });
                     reciever.save();
 
                     res.status(201).json({

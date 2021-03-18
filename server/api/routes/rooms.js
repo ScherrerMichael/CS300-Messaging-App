@@ -128,29 +128,39 @@ router.post('/:roomId/messages', async (req, res, next) => {
 
 
 //POST a new User in an existing room
-router.post('/:roomId/users', async (req, res, next) => {
+router.post('/:roomId/add-user', async (req, res, next) => {
 
+        const userId = req.body._id; //database id NOT uid!!!
+        const roomId = req.params.roomId;
     try{
-        const id = req.params.roomId;
 
-        const user = new User({
-            _id: new mongoose.Types.ObjectId(),
-            user_name: req.body.user_name,
-            avatar: req.body.avatar,
-            email: req.body.email,
-            password: req.body.password,
-            is_active: req.body.is_active
+        User.findOne({'_id':userId})
+        .exec()
+        .then(user => {
+            if(user){
+
+                Room.updateOne({_id: roomId}, {$push:{
+                    users: user
+                }})
+                .then(result =>{
+                    console.log(result);
+                    res.status(201).json({
+                        message: "user added to room",
+                        result: result
+                    })
+                });
+
+            } else {
+                res.status(404).json({
+                    message: 'No valid entry found for provided uid.'
+                })
+            }
         })
+        .catch(err => {
+            console.log(err);
+            res.status(500).json({error: err})
+        });
 
-        const result = await Room.updateOne({_id: id}, {$push:{
-            users: user
-        }});
-
-        console.log(result);
-        res.status(201).json({
-            message: "user added to room",
-            result: result
-        })
 
     } catch(err) {
         res.status(501).json({
