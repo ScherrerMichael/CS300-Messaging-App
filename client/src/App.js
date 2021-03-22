@@ -8,16 +8,19 @@ import Chat from './components/Chat/Chat'
 import Login from './components/Login/Login'
 import ForgotPassword from './components/ForgotPassword/ForgotPassword'
 import { AuthProvider } from './contexts/AuthContext';
+import {RequestProvider } from './contexts/HttpRequestContext';
 //import { Switch } from 'react-router-dom';
 
 const App = () => (
     <AuthProvider>
+        <RequestProvider>
         <Router>
             <PrivateRoute path="/" exact component = {Chat} />
             <Route path="/login" component = {Login} />
             <Route path="/signup" component = {Signup} />
             <Route path="/forgot-password" component = {ForgotPassword} />
         </Router>
+        </RequestProvider>
     </AuthProvider>
 );
 

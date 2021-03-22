@@ -34,87 +34,35 @@ export function AuthProvider({children}) {
         }
     }
 
-    function signup(email, password, displayName){
-        return auth.createUserWithEmailAndPassword(email, password)
-        .then(function(result) {
-            return result.user.updateProfile({
+    async function signup(email, password, displayName){
+        try {
+            const result = await auth.createUserWithEmailAndPassword(email, password);
+            return await result.user.updateProfile({
                 displayName: displayName
-            })
-        }).catch((error) =>{
+            });
+        } catch (error) {
             console.log(error);
-        });
+        }
     }
 
-    function login(email, password) {
-        return auth.signInWithEmailAndPassword(email, password).then((email) =>{
+    async function login(email, password) {
+        try {
+            const email_2 = await auth.signInWithEmailAndPassword(email, password);
             let now = new Date();
             now.setMonth(now.getMonth() + 1);
-            setCookie('name', email, {expires: now});
-        }).catch((error) =>{
+            setCookie('name', email_2, { expires: now });
+        } catch (error) {
             console.log(error);
-        });
+        }
     }
 
-    function logout(){
-        return auth.signOut().then(() =>{
-            removeCookie('name');
-        });
+    async function logout(){
+        await auth.signOut();
+        removeCookie('name');
     }
 
     function resetPassword(email){
         return auth.sendPasswordResetEmail(email);
-    }
-
-    async function postNewUser(displayName){
-        var user = auth.currentUser;
-
-        if(user !== null)
-        {
-            axios.post(`${process.env.REACT_APP_MONGO_DB_PORT}/users/`, {
-                email: user.email,
-                uid: user.uid,
-                user_name: user.displayName
-            })
-            .then(res => {
-                console.log(res)
-            })
-            .catch(err => {
-                console.log(err);
-            });
-        }
-
-
-        return 1;
-    }
-
-    async function postNewRoomFromUser(roomName){
-
-        var currentUserId = currentUser.uid;
-
-
-        axios.post(`${process.env.REACT_APP_MONGO_DB_PORT}/rooms/${currentUserId}`, {topic: roomName})
-        .then(res => {
-            //console.log(res)
-        })
-        .catch(err => {
-            console.log(err);
-        });
-
-    }
-
-    async function getRoomsWithUser(){
-
-        var doc;
-
-        axios.get(`${process.env.REACT_APP_MONGO_DB_PORT}/users/rooms/${currentUser.uid}`)
-        .then(res => {
-            //console.log(res)
-            return res;
-        })
-        .catch(err => {
-            console.log(err);
-        });
-
     }
 
     useEffect(() => {
@@ -132,9 +80,6 @@ export function AuthProvider({children}) {
         cookies,
         signup,
         login,
-        postNewUser,
-        postNewRoomFromUser,
-        getRoomsWithUser,
         logout,
         resetPassword,
     }

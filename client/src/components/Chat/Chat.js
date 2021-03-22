@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useAuth } from '../../contexts/AuthContext';
+import { useRequest } from '../../contexts/HttpRequestContext';
 import { Link, useHistory } from 'react-router-dom';
 import style from './style.css'
 import 'bootstrap/dist/css/bootstrap.min.css'
@@ -23,7 +24,13 @@ import io from 'socket.io-client'
 let socket;
 
 const Chat = () => {
-    const { currentUser, logout, postNewRoomFromUser, cookies } = useAuth();
+    const { currentUser, logout, cookies } = useAuth();
+    const { postNewRoomFromUser,
+            getRoomsWithUser,
+            getRoomMessages,
+            postMessageToRoom,
+    } = useRequest();
+
     const [show, setShow] = useState(false);
 
     const handleClose = () => setShow(false);
@@ -51,22 +58,23 @@ const Chat = () => {
         setTab(tab);
     }
 
+    function updateAllRooms(){
+            getRoomsWithUser
+            .then(data => {
+                setRooms({ rooms: data});
+            })
+            .catch()
+    }
+
     useEffect(() => { // getting all rooms that the user is in
         let mounted = true;
 
-        axios.get(`${process.env.REACT_APP_MONGO_DB_PORT}/users/rooms/${currentUser.uid}`)
-            .then(res => {
-                if (mounted) {
-                    setRooms({ rooms: res.data });
-                }
-            })
-            .catch(err => {
-                //console.log(err);
-            })
+        if (mounted) {
+        }
+            updateAllRooms();
         return () => mounted = false;
 
     }, [room, modalRef, tab])
-
 
     useEffect(() => { // getting all rooms that the user is in
         let mounted = true;
@@ -87,7 +95,6 @@ const Chat = () => {
 
     }, [tab])
 
-
     function handleReset() {
         formRef.current.reset(); //reset the value of the form stuff
         setMessage({});
@@ -96,30 +103,14 @@ const Chat = () => {
     async function handleSubmit(e) { //post a message to the room
         e.preventDefault();
 
-        if (messageRef.current.value !== '') {
-
-            const messageToSend = {
-                uid: currentUser.uid,
-                message_body: messageRef.current.value,
-            }
-
-            socket.emit('sendMessage', currentUser, room, messageToSend, ({ callback }) => {
-                setMessages([...messages, callback.message]);
-                console.log(messages);
-
-                axios.post(`${process.env.REACT_APP_MONGO_DB_PORT}/rooms/${room}/messages`, messageToSend)
-                    .catch(err => {
-                        console.log(err);
-                    });
-
+        postMessageToRoom(room, messageRef.current.value)
+        .then((message) => {
+            socket.emit('sendMessage', currentUser, room, message, ({ callback }) => {
+                setMessages([...messages, message]);
             });
-
             handleReset();
-        } else {
-            console.log('empty input');
-            return null;
-        }
-
+        })
+        .catch()
     }
 
     async function handleAddRoom() { //TODO switch chat and change element of selected element
@@ -128,51 +119,33 @@ const Chat = () => {
 
         try {
             await postNewRoomFromUser(modalRef.current.value);
-
             //update for all rooms
-            axios.get(`${process.env.REACT_APP_MONGO_DB_PORT}/users/rooms/${currentUser.uid}`)
-                .then(res => {
-                    //console.log(res)//
-                    setRooms({ rooms: res.data });
-                    setRoom(roomList.rooms.result[0]._id)
-                })
-                .catch(err => {
-                    console.log(err);
-                });
+            updateAllRooms();
             handleClose();
-
         } catch {
             console.log("error with post room");
         }
-
         setRoomName('');
     }
 
     function handleSwitchRoom(roomId) {
-        //console.log(`room ${roomId} clicked`);
-        setRoom(roomId);
+            let r = roomList.rooms.result.find(a => a._id === roomId)
 
-        let r = roomList.rooms.result.find(a => a._id === roomId)
-
-        if (r) {
-            setCurrentRoomname(r.topic);
-            socket.emit('join', currentUser.displayName, r, ({ message }) => {
-                console.log(message);
-            });
+            if(r !== null)
+            {
+                getRoomMessages(roomId)
+                .then(messages =>{
+                    setMessages(messages)
+                    setRoom(roomId);
+                })
+                .then(() => {
+                    setCurrentRoomname(r.topic);
+                    socket.emit('join', currentUser.displayName, r, ({ message }) => {
+                        console.log(message);
+                    });
+                })
+            }
         }
-    }
-
-    useEffect(() => {
-        //update the room info (send get request and load messages of that room)
-        axios.get(`${process.env.REACT_APP_MONGO_DB_PORT}/rooms/${room}`)
-            .then(res => {
-                setMessages(res.data.messages);
-            })
-            .catch(err => {
-                //console.log(err);
-            });
-    }, [room, 0])
-
 
     async function handleLogout() {
         setError('');
@@ -209,8 +182,6 @@ const Chat = () => {
     }
 
     function handleInviteToRoom(userId) {
-
-        console.log('room clicked')
 
         if (room) {
             axios.post(`${process.env.REACT_APP_MONGO_DB_PORT}/rooms/${room}/add-user`, {
@@ -315,15 +286,16 @@ const Chat = () => {
                     <Row className="add-item">
                         <Col className="line"></Col>
                         <Col className="line">
+                        </Col>
+                        <Col className="add-item">
                             {
                                 (tab === 'rooms' || tab === 'people') ?
                                     <Button onClick={handleShow} className="add-room-btn">
-                                        Add
+                                        +
                                     </Button> :
                                     <div></div>
                             }
                         </Col>
-                        <Col className="line"></Col>
                     </Row>
                 </Col>
 
@@ -341,14 +313,14 @@ const Chat = () => {
                         <Col className="line"></Col>
                     </Row>
                     <Row className="messages">
-                        {/* scroll to bottom will be fixed soon i guess, it will always show in console */}
+                        {/* scroll to bottom will be fixed soon i guess, it will debug in console */}
                         <ScrollToBottom className="w-100" debug={false}>
                             <ListGroup className="w-100">
                                 {
                                     messages ?
                                         messages.map(message =>
                                             <ListGroupItem header="yo" className="w-100 message" key={message._id}>
-                                                {/* <div>{message.uid}</div> TODO maybe include user in message  */}
+                                                {/* <div>{message}</div> */}
                                                 {message.message_body}
                                             </ListGroupItem>) :
                                         <div>no messages</div>
