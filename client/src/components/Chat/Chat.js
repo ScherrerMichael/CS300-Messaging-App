@@ -3,21 +3,22 @@ import { useAuth } from '../../contexts/AuthContext';
 import { Link, useHistory } from 'react-router-dom';
 import style from './style.css'
 import 'bootstrap/dist/css/bootstrap.min.css'
-import Tab from 'react-bootstrap/Tab'
-import Tabs from 'react-bootstrap/Tabs'
-import ListGroup from 'react-bootstrap/ListGroup'
-import Container from 'react-bootstrap/Container';
-import Row from 'react-bootstrap/Row';
-import Col from 'react-bootstrap/Col';
-import Button from 'react-bootstrap/Button';
-import Form from 'react-bootstrap/Form';
-import Modal from 'react-bootstrap/Modal';
-import Card from 'react-bootstrap/Card';
-import Overlay from 'react-bootstrap/Overlay';
+import {
+    Tab, 
+    Tabs, 
+    ListGroup, 
+    Container, 
+    Row, 
+    Col, 
+    Button, 
+    Form, 
+    Modal, 
+    Card, 
+    ListGroupItem,
+} from 'react-bootstrap'
 import ScrollToBottom from 'react-scroll-to-bottom';
 import axios from 'axios';
 import io from 'socket.io-client'
-import ListGroupItem from 'react-bootstrap/esm/ListGroupItem';
 
 let socket;
 
@@ -114,7 +115,6 @@ const Chat = () => {
 
                      });
 
-
             handleReset();
         } else {
             console.log('empty input');
@@ -146,7 +146,6 @@ const Chat = () => {
             console.log("error with post room");
         }
 
-
         setRoomName('');
     }
 
@@ -163,8 +162,6 @@ const Chat = () => {
             console.log(message);
         });
         }
-
-        //tell io that we are in a new 'room'
     }
 
     useEffect(() => {
@@ -342,10 +339,8 @@ const Chat = () => {
                 </Col>
 
                 <Col className="chat debug">
-
-
                     <Row className="messages">
-                        <ScrollToBottom className="w-100">
+                        <ScrollToBottom className="w-100" debug={true}>
                         <ListGroup className="w-100">
                             {
                                 messages ?
