@@ -4,16 +4,16 @@ import { Link, useHistory } from 'react-router-dom';
 import style from './style.css'
 import 'bootstrap/dist/css/bootstrap.min.css'
 import {
-    Tab, 
-    Tabs, 
-    ListGroup, 
-    Container, 
-    Row, 
-    Col, 
-    Button, 
-    Form, 
-    Modal, 
-    Card, 
+    Tab,
+    Tabs,
+    ListGroup,
+    Container,
+    Row,
+    Col,
+    Button,
+    Form,
+    Modal,
+    Card,
     ListGroupItem,
 } from 'react-bootstrap'
 import ScrollToBottom from 'react-scroll-to-bottom';
@@ -23,7 +23,7 @@ import io from 'socket.io-client'
 let socket;
 
 const Chat = () => {
-    const { currentUser, logout, postNewRoomFromUser, cookies} = useAuth();
+    const { currentUser, logout, postNewRoomFromUser, cookies } = useAuth();
     const [show, setShow] = useState(false);
 
     const handleClose = () => setShow(false);
@@ -47,7 +47,7 @@ const Chat = () => {
     const messageRef = useRef();
     const [message, setMessage] = useState({});
 
-    const handleTabChange=(tab)=>{
+    const handleTabChange = (tab) => {
         setTab(tab);
     }
 
@@ -71,18 +71,17 @@ const Chat = () => {
     useEffect(() => { // getting all rooms that the user is in
         let mounted = true;
 
-                    //update friends //this is ugly...
-                    axios.get(`${process.env.REACT_APP_MONGO_DB_PORT}/users/${currentUser.uid}`)
-                    .then(res => {
-                        if(mounted)
-                        {
-                            setFriends({friends: res.data})
-                        }
-                    })
-                    .catch(err => {
-                        console.log(err);
-                    });
-                
+        //update friends //this is ugly...
+        axios.get(`${process.env.REACT_APP_MONGO_DB_PORT}/users/${currentUser.uid}`)
+            .then(res => {
+                if (mounted) {
+                    setFriends({ friends: res.data })
+                }
+            })
+            .catch(err => {
+                console.log(err);
+            });
+
 
         return () => mounted = false;
 
@@ -104,16 +103,16 @@ const Chat = () => {
                 message_body: messageRef.current.value,
             }
 
-                     socket.emit('sendMessage', currentUser, room, messageToSend,({ callback }) => {
-                         setMessages([...messages, callback.message]);
-                         console.log(messages);
+            socket.emit('sendMessage', currentUser, room, messageToSend, ({ callback }) => {
+                setMessages([...messages, callback.message]);
+                console.log(messages);
 
-                        axios.post(`${process.env.REACT_APP_MONGO_DB_PORT}/rooms/${room}/messages`, messageToSend)
-                        .catch(err => {
-                            console.log(err);
-                        });
+                axios.post(`${process.env.REACT_APP_MONGO_DB_PORT}/rooms/${room}/messages`, messageToSend)
+                    .catch(err => {
+                        console.log(err);
+                    });
 
-                     });
+            });
 
             handleReset();
         } else {
@@ -140,7 +139,7 @@ const Chat = () => {
                 .catch(err => {
                     console.log(err);
                 });
-                    handleClose();
+            handleClose();
 
         } catch {
             console.log("error with post room");
@@ -153,14 +152,13 @@ const Chat = () => {
         //console.log(`room ${roomId} clicked`);
         setRoom(roomId);
 
-        let r = roomList.rooms.result.find( a => a._id === roomId)
+        let r = roomList.rooms.result.find(a => a._id === roomId)
 
-        if(r)
-        {
+        if (r) {
             setCurrentRoomname(r.topic);
-            socket.emit('join', currentUser.displayName, r,({ message }) => {
-            console.log(message);
-        });
+            socket.emit('join', currentUser.displayName, r, ({ message }) => {
+                console.log(message);
+            });
         }
     }
 
@@ -188,13 +186,13 @@ const Chat = () => {
         }
     }
 
-    function handleAddUser(){
+    function handleAddUser() {
 
         axios.post(`${process.env.REACT_APP_MONGO_DB_PORT}/users/${currentUser.uid}/add-friend`, {
             user_name: modalRef.current.value
         })
             .then(() => {
-                    axios.get(`${process.env.REACT_APP_MONGO_DB_PORT}/users/${currentUser.uid}/friends`)
+                axios.get(`${process.env.REACT_APP_MONGO_DB_PORT}/users/${currentUser.uid}/friends`)
                     .then(res => {
                         //console.log(res)
                         //setFriends({friendsList: res.data})
@@ -210,21 +208,20 @@ const Chat = () => {
             });
     }
 
-    function handleInviteToRoom(userId){
+    function handleInviteToRoom(userId) {
 
         console.log('room clicked')
 
-        if(room)
-        {
-                   axios.post(`${process.env.REACT_APP_MONGO_DB_PORT}/rooms/${room}/add-user`,{
-                       uid: userId
-                   })
-                   .then(res => {
-                       console.log(res)
-                   })
-                   .catch(err => {
-                       console.log(err);
-                   });
+        if (room) {
+            axios.post(`${process.env.REACT_APP_MONGO_DB_PORT}/rooms/${room}/add-user`, {
+                uid: userId
+            })
+                .then(res => {
+                    console.log(res)
+                })
+                .catch(err => {
+                    console.log(err);
+                });
         } else {
             console.log('You need to be in a room!');
         }
@@ -243,35 +240,27 @@ const Chat = () => {
 
     useEffect(() => {
 
-        socket.on(`welcome`, (messageBody) =>{
+        socket.on(`welcome`, (messageBody) => {
             console.log(messageBody);
         })
 
-        socket.on('re', (result) =>{
-            setMessages( prevMessages => ([...prevMessages, result.message]));
+        socket.on('re', (result) => {
+            setMessages(prevMessages => ([...prevMessages, result.message]));
         })
 
     }, []);
 
     return (
         <Container fluid className="main">
-            <Row>
+            <Row className="top-row">
                 <Col md="6" className="user-header-back">
                     <strong className="user-header">{currentUser.displayName}</strong>
                     <Button variant="link" onClick={handleLogout}>Log out</Button>
                 </Col>
                 <Col>
-                    <Card className="chat-info">
-                        <Card.Body>
-                            <h1 className="small-font">
-                            {currentRoomName}
-                            </h1>
-                            {/* <Button className="invite-chat" onClick={handleInviteToRoom}>invite</Button> */}
-                            </Card.Body>
-                            </Card>
                 </Col>
                 <Col>
-                {/*  */}
+                    {/*  */}
                 </Col>
             </Row>
             <Row className="main-row">
@@ -286,15 +275,15 @@ const Chat = () => {
                                     <Tab.Container>
                                         <ListGroup className="w-100 list-group-menu">
                                             {
-                                                     friendsList.friends.friends?
-                                                     friendsList.friends.friends.map(friend =>
-                                                         <ListGroup.Item action
-                                                             className="list-item-rooms"
-                                                             onClick={() => handleInviteToRoom(friend.uid)}
-                                                             key={room._id}>{friend.user_name}
-                                                         </ListGroup.Item>) 
-                                                         :
-                                                     <div>nothing</div>
+                                                friendsList.friends.friends ?
+                                                    friendsList.friends.friends.map(friend =>
+                                                        <ListGroup.Item action
+                                                            className="list-item-rooms"
+                                                            onClick={() => handleInviteToRoom(friend.uid)}
+                                                            key={room._id}>{friend.user_name}
+                                                        </ListGroup.Item>)
+                                                    :
+                                                    <div>nothing</div>
                                             }
                                         </ListGroup>
                                     </Tab.Container>
@@ -327,10 +316,10 @@ const Chat = () => {
                         <Col className="line"></Col>
                         <Col className="line">
                             {
-                                (tab === 'rooms' || tab === 'people')?
-                                <Button onClick={handleShow} className="add-room-btn">
-                                    Add
-                                    </Button>:
+                                (tab === 'rooms' || tab === 'people') ?
+                                    <Button onClick={handleShow} className="add-room-btn">
+                                        Add
+                                    </Button> :
                                     <div></div>
                             }
                         </Col>
@@ -339,24 +328,36 @@ const Chat = () => {
                 </Col>
 
                 <Col className="chat debug">
+                    <Row>
+                        <Col className="line"></Col>
+                    <Card className="chat-info">
+                        <Card.Body>
+                            <h1 className="small-font">
+                            {currentRoomName}
+                            </h1>
+                            {/* <Button className="invite-chat" onClick={handleInviteToRoom}>invite</Button> */}
+                            </Card.Body>
+                    </Card>
+                        <Col className="line"></Col>
+                    </Row>
                     <Row className="messages">
-                        <ScrollToBottom className="w-100" debug={true}>
-                        <ListGroup className="w-100">
-                            {
-                                messages ?
-                                    messages.map(message =>
+                        {/* scroll to bottom will be fixed soon i guess, it will always show in console */}
+                        <ScrollToBottom className="w-100" debug={false}>
+                            <ListGroup className="w-100">
+                                {
+                                    messages ?
+                                        messages.map(message =>
                                             <ListGroupItem header="yo" className="w-100 message" key={message._id}>
                                                 {/* <div>{message.uid}</div> TODO maybe include user in message  */}
                                                 {message.message_body}
                                             </ListGroupItem>) :
                                         <div>no messages</div>
-
-                            }
-                        </ListGroup>
+                                }
+                            </ListGroup>
                         </ScrollToBottom>
                     </Row>
 
-                    <Row>
+                    <Row className="text-field-row">
                         <Form ref={formRef} onSubmit={handleSubmit} className="text-box">
                             <Form.Row>
                                 <Col className="form-text-field">
@@ -371,6 +372,9 @@ const Chat = () => {
                         </Form>
                     </Row>
                 </Col>
+                <Col lg="2" className="members">
+                    hi
+                </Col>
             </Row>
 
             {/* <p className ="status">status</p> */}
@@ -378,9 +382,9 @@ const Chat = () => {
             <Modal show={show} onHide={handleClose}>
                 <Modal.Header closeButton>
                     {
-                        (tab === 'rooms')?
-                        <Modal.Title>Create new Room</Modal.Title>:
-                        <Modal.Title>Add User</Modal.Title>
+                        (tab === 'rooms') ?
+                            <Modal.Title>Create new Room</Modal.Title> :
+                            <Modal.Title>Add User</Modal.Title>
                     }
                 </Modal.Header>
                 <Modal.Body>
@@ -397,9 +401,9 @@ const Chat = () => {
                         Close
                         </Button>
                     <Button variant="primary" type="submit" onClick={
-                        (tab === 'rooms')?
-                        handleAddRoom:
-                        handleAddUser
+                        (tab === 'rooms') ?
+                            handleAddRoom :
+                            handleAddUser
                     }>
                         Save Changes
                         </Button>

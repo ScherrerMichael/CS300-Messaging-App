@@ -3,10 +3,15 @@
     height: 100vh;
     padding: 0;
     background-image: linear-gradient(rgba(0,0,0,0.1), rgba(0,0,0,0)), url('./vectorstock_20239401.png');
+    overflow: hidden;
 }
 
 .main-row{
     height: 90vh;
+}
+
+.top-row{
+    background-color: rgb(138, 17, 132);
 }
 
 .user-header{
@@ -15,8 +20,8 @@
 
 .contacts{
     margin-top: 50px;
-    margin-right: 30px;
-    margin-left: 25px;
+    /* margin-right: 30px;
+    margin-left: 25px; */
     overflow: hidden;
     padding-right: 0;
     padding: 0 !important;
@@ -67,20 +72,24 @@
 }
 
 .add-room-btn{
-    position: absolute;
-    top: 740px;
+
 }
 
 .chat{
-    margin-top: 90px;
-    margin-right: 25px;
+    /* margin-top: 90px; */
+    /* padding-bottom: 30px;
+    margin-right: 25px; */
+    margin-top: 10px;
+    /* margin-right: 30px; */
+    overflow: hidden;
+    padding-right: 0;
 }
 
 
 .chat-info{
-    margin-top: 20px;
-    position: absolute;
+    margin-top: 15px;
     height: 50px;
+    width: 100%;
 }
 
 .small-font{
@@ -96,8 +105,9 @@
 
 .messages{
     background-color: aliceblue;
-    height: 95%;
-    border-radius: 20px 20px 0 0 ;
+    height: 86%;
+    margin-top: 20px;
+    /* border-radius: 20px 20px 0 0 ; */
 }
 
 .row{
@@ -140,6 +150,15 @@
     border-width: 1px; */
 }
 
+.text-field-row{
+    overflow: hidden;
+}
+
 .line{
     height: 0;
+}
+
+.members{
+    margin-top: 50px;
+    background-color: aliceblue;
 }
