@@ -88,7 +88,8 @@
 
 
 .chat-info{
-    background-color: rgb(165, 165, 165) !important;
+    background-color: rgb(83, 83, 83) !important;
+    color: aliceblue;
     margin-top: 15px;
     height: 50px;
     width: 100%;
@@ -106,7 +107,6 @@
 }
 
 .messages{
-    background-color: aliceblue;
     height: 86%;
     margin-top: 25px;
     /* border-radius: 20px 20px 0 0 ; */
@@ -135,12 +135,13 @@
 /* the text messages in the chat */
 .message{
     background-color: rgb(77, 77, 77) !important;
+    color: aliceblue;
     border: none !important;
     padding-left: 15px;
 }
 
 .message:hover{
-    background-color: aliceblue;
+    background-color: rgb(82, 82, 82) !important;
 }
 
 .status{

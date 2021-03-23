@@ -29,6 +29,7 @@ const Chat = () => {
             getRoomsWithUser,
             getRoomMessages,
             postMessageToRoom,
+            getUserFromId,
     } = useRequest();
 
     const [show, setShow] = useState(false);
@@ -63,11 +64,14 @@ const Chat = () => {
             .then(data => {
                 setRooms({ rooms: data});
             })
-            .catch()
+            .catch(err => {
+                console.log(err);
+            })
     }
 
     useEffect(() => { // getting all rooms that the user is in
         let mounted = true;
+
 
         if (mounted) {
         }
@@ -314,12 +318,12 @@ const Chat = () => {
                             <ListGroup className="w-100">
                                 {
                                     messages ?
-                                        messages.map(message =>
-                                            <ListGroupItem header="yo" className="w-100 message" key={message._id}>
-                                                {/* <div>{message}</div> */}
+                                        messages.map((message, index) =>
+                                            <ListGroupItem header="yo" className="w-100 message" key={index}>
+                                                <div>{message.uid}</div>
                                                 {message.message_body}
                                             </ListGroupItem>) :
-                                        <div>no messages</div>
+                                        <div>...</div>
                                 }
                             </ListGroup>
                         </ScrollToBottom>

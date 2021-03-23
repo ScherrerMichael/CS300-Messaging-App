@@ -29,9 +29,20 @@ const { currentUser } = useAuth();
                 console.log(err);
             });
         }
-
-
         return 1;
+    }
+
+    let getUserFromId = function(userId){
+        return new Promise(function(resolve, reject){
+
+            axios.get(`${process.env.REACT_APP_MONGO_DB_PORT}/users/${currentUser.uid}`)
+            .then(res => {
+                resolve(res.data)
+            }).catch(err => {
+                console.log(err)
+            })
+
+        })
     }
 
     let postNewRoomFromUser = function(roomName)
@@ -52,6 +63,9 @@ const { currentUser } = useAuth();
 
     let getRoomsWithUser = new Promise(function(resolve, reject){
 
+        if(currentUser !== null)
+        {
+
         axios.get(`${process.env.REACT_APP_MONGO_DB_PORT}/users/rooms/${currentUser.uid}`)
         .then(res => {
             resolve(res.data);
@@ -59,6 +73,12 @@ const { currentUser } = useAuth();
         .catch(err => {
             console.log(err)
         });
+
+        } else {
+            reject('user not logged in')
+        }
+    }).catch(error => { //ust catch rejections
+        console.log(error);
     })
 
     let getRoomMessages = function(roomId){
@@ -104,6 +124,7 @@ const { currentUser } = useAuth();
         getRoomsWithUser,
         getRoomMessages,
         postMessageToRoom,
+        getUserFromId,
     }
 
     return (
