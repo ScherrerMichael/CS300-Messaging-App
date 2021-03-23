@@ -1,8 +1,7 @@
 .main{
-    background-color: rgb(102, 38, 91);
+    background-color: rgb(77, 77, 77);
     height: 100vh;
     padding: 0;
-    background-image: linear-gradient(rgba(0,0,0,0.1), rgba(0,0,0,0)), url('./vectorstock_20239401.png');
     overflow: hidden;
 }
 
@@ -19,7 +18,7 @@
 }
 
 .contacts{
-    margin-top: 50px;
+    /* margin-top: 50px; */
     /* margin-right: 30px;
     margin-left: 25px; */
     overflow: hidden;
@@ -52,6 +51,15 @@
     top: 100px;
 }
 
+.list-item-rooms{
+    background-color: rgb(165, 165, 165) !important;
+    border: none !important;
+}
+
+.list-item-rooms:hover{
+    background-color: rgb(170, 170, 170) !important;
+}
+
 .scrollable{
     overflow-y: scroll !important;
 }
@@ -73,17 +81,14 @@
 }
 
 .chat{
-    /* margin-top: 90px; */
-    /* padding-bottom: 30px;
-    margin-right: 25px; */
     margin-top: 10px;
-    /* margin-right: 30px; */
     overflow: hidden;
     padding-right: 0;
 }
 
 
 .chat-info{
+    background-color: rgb(165, 165, 165) !important;
     margin-top: 15px;
     height: 50px;
     width: 100%;
@@ -103,7 +108,7 @@
 .messages{
     background-color: aliceblue;
     height: 86%;
-    margin-top: 20px;
+    margin-top: 25px;
     /* border-radius: 20px 20px 0 0 ; */
 }
 
@@ -129,8 +134,13 @@
 
 /* the text messages in the chat */
 .message{
-    background-color: whitesmoke !important;
+    background-color: rgb(77, 77, 77) !important;
+    border: none !important;
     padding-left: 15px;
+}
+
+.message:hover{
+    background-color: aliceblue;
 }
 
 .status{
@@ -156,6 +166,6 @@
 }
 
 .members{
-    margin-top: 50px;
+    /* margin-top: 50px; */
     background-color: rgb(165, 165, 165);
 }

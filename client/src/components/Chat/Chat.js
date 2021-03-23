@@ -160,7 +160,6 @@ const Chat = () => {
     }
 
     function handleAddUser() {
-
         axios.post(`${process.env.REACT_APP_MONGO_DB_PORT}/users/${currentUser.uid}/add-friend`, {
             user_name: modalRef.current.value
         })
@@ -182,7 +181,6 @@ const Chat = () => {
     }
 
     function handleInviteToRoom(userId) {
-
         if (room) {
             axios.post(`${process.env.REACT_APP_MONGO_DB_PORT}/rooms/${room}/add-user`, {
                 uid: userId
@@ -203,10 +201,8 @@ const Chat = () => {
         socket = io(`${process.env.REACT_APP_MONGO_DB_PORT}`);
 
         return () => {
-
             socket.off();
         }
-
     }, [`${process.env.REACT_APP_MONGO_DB_PORT}`]);
 
     useEffect(() => {
