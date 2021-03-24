@@ -108,8 +108,8 @@ const { currentUser } = useAuth();
             reject(Error('message is undefined'));
 
             axios.post(`${process.env.REACT_APP_MONGO_DB_PORT}/rooms/${room}/messages`, messageToSend)
-            .then(() => {
-                resolve(messageToSend);
+            .then(res => {
+                resolve(res.data.result);
             })
             .catch(err => {
                 reject(err);

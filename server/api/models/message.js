@@ -1,10 +1,20 @@
 const mongoose = require('mongoose');
 
-const User = require('./user');
-
 const messageSchema = mongoose.Schema({
     _id: mongoose.Schema.Types.ObjectId,
-    uid: String,
+    user: {
+        uid: 
+        {
+            type: String,
+            ref: 'User'
+        },
+
+        user_name: 
+        {
+            type: String,
+            ref: 'User'
+        }
+    },
     message_body: String,
     message_status: {type: Boolean, default: true},
     created_at: {type: Date, default: Date.now},

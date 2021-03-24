@@ -108,7 +108,7 @@ const Chat = () => {
         e.preventDefault();
 
         postMessageToRoom(room, messageRef.current.value)
-        .then((message) => {
+        .then(message => {
             socket.emit('sendMessage', currentUser, room, message, ({ callback }) => {
                 setMessages([...messages, message]);
             });
@@ -117,18 +117,17 @@ const Chat = () => {
         .catch()
     }
 
-    async function handleAddRoom() { //TODO switch chat and change element of selected element
+    function handleAddRoom() { //TODO switch chat and change element of selected element
 
-        setRoomName(modalRef.current.value);
+            setRoomName(modalRef.current.value);
 
-        try {
-            await postNewRoomFromUser(modalRef.current.value);
-            //update for all rooms
-            updateAllRooms();
-            handleClose();
-        } catch {
-            console.log("error with post room");
-        }
+            postNewRoomFromUser(modalRef.current.value).then(() => {
+                //update for all rooms
+                updateAllRooms();
+                handleClose();
+            }).catch(err => {
+                console.log("error with post room");
+            })
         setRoomName('');
     }
 
@@ -139,6 +138,7 @@ const Chat = () => {
             {
                 getRoomMessages(roomId)
                 .then(messages =>{
+                    // console.log(messages[0].user.user_name)
                     setMessages(messages)
                     setRoom(roomId);
                 })
@@ -320,8 +320,8 @@ const Chat = () => {
                                     messages ?
                                         messages.map((message, index) =>
                                             <ListGroupItem header="yo" className="w-100 message" key={index}>
-                                                <div>{message.uid}</div>
-                                                {message.message_body}
+                                                <div className="message-author">{message.user.user_name}</div>
+                                                <p>{message.message_body}</p>
                                             </ListGroupItem>) :
                                         <div>...</div>
                                 }

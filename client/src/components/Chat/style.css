@@ -144,6 +144,10 @@
     background-color: rgb(82, 82, 82) !important;
 }
 
+.message-author{
+    font-size: small;
+}
+
 .status{
     background-color: greenyellow;
     text-align: center;

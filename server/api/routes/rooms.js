@@ -97,33 +97,43 @@ router.post('/:userId', (req, res, next) => {
 });
 
 //POST a new message in an existing room
-router.post('/:roomId/messages', async (req, res, next) => {
+router.post('/:roomId/messages', async (req, res, next) => { //TODO Test This!!
 
-    try{
+        const userId = req.body.uid
         const id = req.params.roomId;
 
-        const message = new Message({
+        let  message = new Message({
             _id: new mongoose.Types.ObjectId(),
-            uid: req.body.uid,
             message_body: req.body.message_body,
             message_status: req.body.message_status,
             created_at: req.body.created_at
         })
 
-        const result = await Room.updateOne({_id: id}, {$push:{
-            messages: message
-        }});
+        User.findOne({uid: userId})
+        .then(doc => {
+            if(doc)
+            {
+                message.user = doc;
 
-        res.status(201).json({
-            message: "message added to room",
-            result: message
-        })
+                Room.updateOne({_id: id}, {$push:{
+                    messages: message
+                }})
+                .then(() => {
+                    res.status(201).json({
+                        message: "message added to room",
+                        result: message
+                    })
+                });
 
-    } catch(err) {
-        res.status(501).json({
-            error: err
+            } else {
+                res.status(404).json({
+                    message: 'user not found'
+                })
+            }
         })
-    }
+        .catch(err => {
+            console.log(err);
+        })
 });
 
 
