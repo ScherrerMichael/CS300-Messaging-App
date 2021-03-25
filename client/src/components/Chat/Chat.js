@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
+import {PlusSquare, PersonLinesFill, HouseFill, ChatLeftTextFill} from 'react-bootstrap-icons';
 import { useAuth } from '../../contexts/AuthContext';
 import { useRequest } from '../../contexts/HttpRequestContext';
 import { Link, useHistory } from 'react-router-dom';
@@ -54,6 +55,10 @@ const Chat = () => {
     const formRef = useRef();
     const messageRef = useRef();
     const [message, setMessage] = useState({});
+    const [xPos, setXPos] = useState('0px');
+    const [yPos, setYPos] = useState('0px');
+    const [showFriendOptions, setShowFriendOptions] = useState(false);
+    const [currentFriend, setCurrentFriend] = useState('');
 
     const handleTabChange = (tab) => {
         setTab(tab);
@@ -221,6 +226,22 @@ const Chat = () => {
 
     }, []);
 
+
+    function handleRightClick(e, uid) // TODO: how can I make these call in order?
+    {
+        e.preventDefault();
+
+        setXPos(e.pageX);
+        setYPos(e.pageY);
+        setCurrentFriend(uid);
+        alert(uid);
+        setShowFriendOptions(true);
+    }
+
+    function handleMouseLeave(){
+        setShowFriendOptions(false);
+    }
+
     return (
         <Container fluid className="main">
             <Row className="top-row">
@@ -237,11 +258,11 @@ const Chat = () => {
             <Row className="main-row">
                 <Col xs="3" className="contacts debug">
                     <Row className="tab-row">
-                        <Tabs onSelect={handleTabChange}>
-                            <Tab eventKey={'home'} title="Home">
-
+                        <Tabs onSelect={handleTabChange} className="tab-container">
+                            <Tab eventKey={'home'} title={<span><HouseFill className="tab-icon"/></span>} className="filled-tab">
+                                {/* home stuff */}
                             </Tab>
-                            <Tab eventKey={'people'} title="People">
+                            <Tab eventKey={'people'} title={<span><PersonLinesFill className="tab-icon"/></span>} className="filled-tab">
                                 <Row className="menu">
                                     <Tab.Container>
                                         <ListGroup className="w-100 list-group-menu">
@@ -250,8 +271,12 @@ const Chat = () => {
                                                     friendsList.friends.friends.map(friend =>
                                                         <ListGroup.Item action
                                                             className="list-item-rooms"
+                                                            // TODO: create a popup menu at location of cursor on right click
                                                             onClick={() => handleInviteToRoom(friend.uid)}
-                                                            key={room._id}>{friend.user_name}
+                                                            onContextMenu={(e) => handleRightClick(e, friend.uid)}
+                                                            key={room._id}>
+                                                                {/* TODO: add image of person here */}
+                                                                {friend.user_name}
                                                         </ListGroup.Item>)
                                                     :
                                                     <div>nothing</div>
@@ -260,7 +285,7 @@ const Chat = () => {
                                     </Tab.Container>
                                 </Row>
                             </Tab>
-                            <Tab eventKey={'rooms'} title="Rooms">
+                            <Tab eventKey={'rooms'} title={<span><ChatLeftTextFill className="tab-icon"/></span>} className="filled-tab">
                                 <Row className="menu">
                                     <Tab.Container>
                                         <ListGroup className="w-100 list-group-menu">
@@ -284,14 +309,11 @@ const Chat = () => {
 
 
                     <Row className="add-item">
-                        <Col className="line"></Col>
-                        <Col className="line">
-                        </Col>
                         <Col className="add-item">
                             {
                                 (tab === 'rooms' || tab === 'people') ?
                                     <Button onClick={handleShow} className="add-room-btn">
-                                        +
+                                        <PlusSquare/>
                                     </Button> :
                                     <div></div>
                             }
@@ -349,7 +371,27 @@ const Chat = () => {
                 </Col>
             </Row>
 
-            {/* <p className ="status">status</p> */}
+            {
+                showFriendOptions?
+                <ListGroup style={
+                    {
+                        top: `${yPos}px`,
+                        left: `${xPos}px`,
+                        position: 'absolute',
+                        zIndex: '100',
+                    }} onMouseLeave={handleMouseLeave}>
+                    <ListGroup.Item action>
+                        add to room
+                    </ListGroup.Item>
+                    <ListGroup.Item action>
+                        direct Message
+                    </ListGroup.Item>
+                    <ListGroup.Item action>
+                        remove friend
+                    </ListGroup.Item>
+                </ListGroup>: null
+            }
+
 
             <Modal show={show} onHide={handleClose}>
                 <Modal.Header closeButton>

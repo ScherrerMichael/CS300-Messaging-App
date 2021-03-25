@@ -1,8 +1,21 @@
+/* variables */
+:root{
+    --header-color: rgb(138, 17, 132);
+    --side-color:  rgb(126, 126, 126);
+    --side-hover: rgb(170, 170, 170);
+    --middle-color: rgb(77, 77, 77);
+    --middle-hover: rgb(85,85,85);
+    --topic-color: rgb(83,83,83);
+    --tab-icon-color: white;
+    --tab-default-color: rgb(119, 119, 119);
+}
+
 .main{
-    background-color: rgb(77, 77, 77);
+    background-color: var(--middle-color);
     height: 100vh;
     padding: 0;
     overflow: hidden;
+    z-index: -1;
 }
 
 .main-row{
@@ -10,7 +23,7 @@
 }
 
 .top-row{
-    background-color: rgb(138, 17, 132);
+    background-color: var(--header-color);
 }
 
 .user-header{
@@ -24,24 +37,35 @@
     overflow: hidden;
     padding-right: 0;
     padding: 0 !important;
-    background-color: rgb(165, 165, 165);
+    background-color: var(--side-color);
 }
 
-.tab{
-    height: 30px;
-    font-size: small;
-    background-color: rgb(93, 146, 192);
-    text-align: center;
-    border-color: rgb(85, 76, 76);
-    border-style: solid;
-    border-left: 1px;
-    border-width: 1px;
+.tab-container
+{
+    display: flex !important;
+    flex-wrap: nowrap !important;
+    align-items: stretch !important;
+    width: 100% !important;
 }
 
-.tab-row{
-    background-color: rgb(165, 165, 165);
+.nav-link{
+    width: 100%;
+    background-color: var(--tab-default-color) !important;
+    border-bottom: 1px solid white !important;
 }
 
+.nav-link.active{
+    background-color: var(--side-color) !important;
+    border-bottom: 1px !important;
+}
+
+.tab-icon{
+    color: var(--tab-icon-color);
+}
+
+.tab-icon:focus{
+    color: var(--tab-icon-color-selected);
+}
 
 .list-group-menu{
     padding-right: 0px;
@@ -52,12 +76,13 @@
 }
 
 .list-item-rooms{
-    background-color: rgb(165, 165, 165) !important;
+    background-color: var(--side-color) !important;
+    color: aliceblue !important;
     border: none !important;
 }
 
 .list-item-rooms:hover{
-    background-color: rgb(170, 170, 170) !important;
+    background-color: var(--side-hover) !important;
 }
 
 .scrollable{
@@ -65,19 +90,25 @@
 }
 
 .menu{
-    background-color: rgb(105, 184, 236);
     height: 100%;
     width: 100%;
     overflow-y: scroll;
 }
 
 .add-item{
-    margin-left: 0 !important;
-    padding-right: 0px !important;
+    flex-direction: column;
+    align-items: center;
 }
 
 .add-room-btn{
+    background-color: var(--side-color) !important;
+    border-color: var(--side-color) !important;
+    margin-top: 10px;
+    margin-left: auto;
+}
 
+.add-room-btn:focus{
+    box-shadow: none !important;
 }
 
 .chat{
@@ -88,7 +119,7 @@
 
 
 .chat-info{
-    background-color: rgb(83, 83, 83) !important;
+    background-color: var(--topic-color) !important;
     color: aliceblue;
     margin-top: 15px;
     height: 50px;
@@ -116,6 +147,7 @@
     flex-wrap: nowrap !important;
 }
 
+
 .text-box{
     width: 100%;
 }
@@ -138,10 +170,11 @@
     color: aliceblue;
     border: none !important;
     padding-left: 15px;
+    font-size: larger;
 }
 
 .message:hover{
-    background-color: rgb(82, 82, 82) !important;
+    background-color: var(--middle-hover) !important;
 }
 
 .message-author{
@@ -172,5 +205,5 @@
 
 .members{
     /* margin-top: 50px; */
-    background-color: rgb(165, 165, 165);
+    background-color: var(--side-color);
 }
