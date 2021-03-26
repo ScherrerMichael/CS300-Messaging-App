@@ -1,5 +1,5 @@
 import React, { useContext, useEffect, useState} from 'react';
-import { useAuth } from './AuthContext';
+import { useAuth , AuthProvider} from './AuthContext';
 import axios from 'axios';
 
 const HttpRequestContext = React.createContext();
@@ -11,25 +11,27 @@ export function useRequest(){
 
 export function RequestProvider({children}) {
 
-const { currentUser } = useAuth();
+const { currentUser, signup} = useAuth();
 
-    async function postNewUser(user){
+    function postNewUser(email, password, userName){
 
-        if(user !== null)
-        {
-            axios.post(`${process.env.REACT_APP_MONGO_DB_PORT}/users/`, {
-                email: user.email,
-                uid: user.uid,
-                user_name: user.displayName
-            })
+        signup(email, password, userName)
+        .then((userCredential) => {
+            var user = userCredential.user;
+            console.log(user)
             .then(res => {
                 console.log(res)
+                return res;
             })
             .catch(err => {
                 console.log(err);
+                return err;
             });
-        }
-        return 1;
+        })
+        .catch(err => {
+            return err;
+        })
+
     }
 
     let getUserFromId = function(userId){
@@ -65,14 +67,13 @@ const { currentUser } = useAuth();
 
         if(currentUser !== null)
         {
-
-        axios.get(`${process.env.REACT_APP_MONGO_DB_PORT}/users/rooms/${currentUser.uid}`)
-        .then(res => {
-            resolve(res.data);
-        })
-        .catch(err => {
-            console.log(err)
-        });
+            axios.get(`${process.env.REACT_APP_MONGO_DB_PORT}/users/rooms/${currentUser.uid}`)
+            .then(res => {
+                resolve(res.data);
+            })
+            .catch(err => {
+                console.log(err)
+            });
 
         } else {
             reject('user not logged in')

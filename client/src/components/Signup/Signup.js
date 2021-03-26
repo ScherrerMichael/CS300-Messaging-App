@@ -1,7 +1,8 @@
-import React, {useRef, useState} from 'react';
+import React, {useEffect, useRef, useState} from 'react';
 import {Form, Button, Card, Container, Alert} from 'react-bootstrap';
 import {Link, useHistory} from 'react-router-dom';
 import {useAuth, AuthProvider} from '../../contexts/AuthContext';
+import {useRequest, RequestProvider} from '../../contexts/HttpRequestContext'
 import axios from 'axios';
 
 
@@ -11,7 +12,8 @@ const Signup = () => {
     const passwordRef = useRef();
     const passwordConfirmRef = useRef();
     const userNameRef = useRef();
-    const {signup, postNewUser} = useAuth();
+    const {currentUser, signup} = useAuth();
+    const {postNewUser} = useRequest();
     const [error, setError] = useState("");
     const [loading, setLoading] = useState(false);
     const history = useHistory();
@@ -20,27 +22,27 @@ const Signup = () => {
         e.preventDefault();
 
 
-        if(passwordRef.current.value !==
-            passwordConfirmRef.current.value)
-            {
-                return setError('Passwords do not match');
-            }
-            
-        try{
-            setError("");
-            setLoading(true);
-            await signup(emailRef.current.value, passwordRef.current.value, userNameRef.current.value);
-
-            //send new user data to backend.
-            postNewUser();
-            history.push("/");
-            } catch {
-            setError("Failed to create and account");
+        if (passwordRef.current.value !==
+            passwordConfirmRef.current.value) {
+            return setError('Passwords do not match');
         }
 
-        setLoading(false);
-
+        setError("");
+        try {
+            setLoading(true);
+            signup(emailRef.current.value, passwordRef.current.value, userNameRef.current.value)
+                .then(() => {
+                    setLoading(false)
+                    history.push("/");
+                })
+        } catch {
+            setError('error creating account')
+        }
     }
+
+    useEffect(() =>{
+
+    }, [loading])
 
     return (
         <AuthProvider>

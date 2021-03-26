@@ -1,7 +1,6 @@
 import React, { useContext, useEffect, useState} from 'react';
 import axios from 'axios';
 import {auth} from '../firebase';
-import {useCookies} from 'react-cookie';
 
 const AuthContext = React.createContext();
 
@@ -12,33 +11,23 @@ export function useAuth(){
 export function AuthProvider({children}) {
 
     const [currentUser, setCurrentUser] = useState();
-    const [cookies, setCookie, removeCookie] = useCookies(['name']);
     const [loading, setLoading] = useState(true);
-
-    let axiosConfig = {
-        headers: {
-            'Content-Type': 'application/x-www-form-urlencoded',
-        }
-    }
-
-    const tempUser = {
-        uid: '',
-        user_name: '',
-        avatar: '',
-        email: '',
-        friends: [],
-        is_active: true,
-        headers: {
-            'Content-Type': 'application/json;charset=UTF-8',
-            "Access-Control-Allow-Origin": "*",
-        }
-    }
 
     async function signup(email, password, displayName){
         try {
             const result = await auth.createUserWithEmailAndPassword(email, password);
-            return await result.user.updateProfile({
+            result.user.updateProfile({
                 displayName: displayName
+            })
+                .then(() =>{
+                    axios.post(`${process.env.REACT_APP_MONGO_DB_PORT}/users/`, {
+                        email: result.user.email,
+                        uid: result.user.uid,
+                        user_name: result.user.displayName
+                })
+                .then(() =>{
+                    setCurrentUser(result.user)
+                })
             });
         } catch (error) {
             console.log(error);
@@ -47,10 +36,7 @@ export function AuthProvider({children}) {
 
     async function login(email, password) {
         try {
-            const email_2 = await auth.signInWithEmailAndPassword(email, password);
-            let now = new Date();
-            now.setMonth(now.getMonth() + 1);
-            setCookie('name', email_2, { expires: now });
+            await auth.signInWithEmailAndPassword(email, password);
         } catch (error) {
             console.log(error);
         }
@@ -58,7 +44,6 @@ export function AuthProvider({children}) {
 
     async function logout(){
         await auth.signOut();
-        removeCookie('name');
     }
 
     function resetPassword(email){
@@ -77,7 +62,6 @@ export function AuthProvider({children}) {
 
     const value = {
         currentUser,
-        cookies,
         signup,
         login,
         logout,

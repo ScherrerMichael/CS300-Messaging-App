@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import {PlusSquare, PersonLinesFill, HouseFill, ChatLeftTextFill} from 'react-bootstrap-icons';
-import { useAuth } from '../../contexts/AuthContext';
+import { useAuth , AuthProvider} from '../../contexts/AuthContext';
 import { useRequest } from '../../contexts/HttpRequestContext';
 import { Link, useHistory } from 'react-router-dom';
 import style from './style.css'
@@ -223,6 +223,7 @@ const Chat = () => {
 
     useEffect(() => {
 
+        console.log(currentUser)
         socket.on(`welcome`, (messageBody) => {
             console.log(messageBody);
         })
@@ -251,6 +252,7 @@ const Chat = () => {
     }
 
     return (
+        <AuthProvider>
         <Container fluid className="main">
             <Row className="top-row">
                 <Col md="6" className="user-header-back">
@@ -445,6 +447,7 @@ const Chat = () => {
             </Modal>
 
         </Container>
+       </AuthProvider>
     )
 }
 
