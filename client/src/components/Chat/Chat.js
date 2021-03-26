@@ -25,7 +25,7 @@ import io from 'socket.io-client'
 let socket;
 
 const Chat = () => {
-    const { currentUser, logout, cookies } = useAuth();
+    const { currentUser, logout} = useAuth();
     const { postNewRoomFromUser,
             getRoomsWithUser,
             getRoomMessages,
@@ -67,6 +67,7 @@ const Chat = () => {
     function updateAllRooms(){
             getRoomsWithUser
             .then(data => {
+                if(data)
                 setRooms({ rooms: data});
             })
             .catch(err => {
@@ -83,7 +84,7 @@ const Chat = () => {
             updateAllRooms();
         return () => mounted = false;
 
-    }, [room, modalRef, tab])
+    }, [])
 
     useEffect(() => { // getting all rooms that the user is in
         let mounted = true;
@@ -112,7 +113,7 @@ const Chat = () => {
     async function handleSubmit(e) { //post a message to the room
         e.preventDefault();
 
-        postMessageToRoom(room, messageRef.current.value)
+        postMessageToRoom(room._id, messageRef.current.value)
         .then(message => {
             socket.emit('sendMessage', currentUser, room, message, ({ callback }) => {
                 setMessages([...messages, message]);
@@ -215,6 +216,7 @@ const Chat = () => {
     //similar to componentdidmount
     useEffect(() => {
         socket = io(`${process.env.REACT_APP_MONGO_DB_PORT}`);
+        console.log(currentUser)
 
         return () => {
             socket.off();
@@ -223,7 +225,6 @@ const Chat = () => {
 
     useEffect(() => {
 
-        console.log(currentUser)
         socket.on(`welcome`, (messageBody) => {
             console.log(messageBody);
         })
@@ -252,11 +253,11 @@ const Chat = () => {
     }
 
     return (
-        <AuthProvider>
         <Container fluid className="main">
             <Row className="top-row">
                 <Col md="6" className="user-header-back">
-                    <strong className="user-header">{currentUser.displayName}</strong>
+                    {/* for some reason, users display name is not show on start when signing up */}
+                    <strong className="user-header">{currentUser.email}</strong>
                     <Button variant="link" onClick={handleLogout}>Log out</Button>
                 </Col>
                 <Col>
@@ -447,7 +448,6 @@ const Chat = () => {
             </Modal>
 
         </Container>
-       </AuthProvider>
     )
 }
 

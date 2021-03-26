@@ -20,15 +20,14 @@ export function AuthProvider({children}) {
                 displayName: displayName
             })
                 .then(() =>{
+                    auth.updateCurrentUser(result.user)})
+                .then(() =>{
                     axios.post(`${process.env.REACT_APP_MONGO_DB_PORT}/users/`, {
                         email: result.user.email,
                         uid: result.user.uid,
                         user_name: result.user.displayName
                 })
-                .then(() =>{
-                    setCurrentUser(result.user)
                 })
-            });
         } catch (error) {
             console.log(error);
         }
