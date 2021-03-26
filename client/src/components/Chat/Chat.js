@@ -48,7 +48,7 @@ const Chat = () => {
         friends: []
     });
     const [messages, setMessages] = useState([]);
-    const [room, setRoom] = useState('');
+    const [room, setRoom] = useState({});
     const [roomName, setRoomName] = useState('');
     const [currentRoomName, setCurrentRoomname] = useState('');
     const modalRef = useRef();
@@ -136,6 +136,11 @@ const Chat = () => {
         setRoomName('');
     }
 
+    function handleAddPrivateRoom() { //TODO: create room with topic name of messagee/messager
+        console.log('to be implmented')
+        setShowFriendOptions(false);
+    }
+
     function handleSwitchRoom(roomId) {
             let r = roomList.rooms.result.find(a => a._id === roomId)
 
@@ -145,7 +150,8 @@ const Chat = () => {
                 .then(messages =>{
                     // console.log(messages[0].user.user_name)
                     setMessages(messages)
-                    setRoom(roomId);
+                    setRoom(r);
+                    console.log(r.users);
                 })
                 .then(() => {
                     setCurrentRoomname(r.topic);
@@ -189,13 +195,14 @@ const Chat = () => {
             });
     }
 
-    function handleInviteToRoom(userId) {
+    function handleInviteToRoom() {
         if (room) {
-            axios.post(`${process.env.REACT_APP_MONGO_DB_PORT}/rooms/${room}/add-user`, {
-                uid: userId
+            axios.post(`${process.env.REACT_APP_MONGO_DB_PORT}/rooms/${room._id}/add-user`, {
+                uid: currentFriend
             })
                 .then(res => {
                     console.log(res)
+                    setShowFriendOptions(false);
                 })
                 .catch(err => {
                     console.log(err);
@@ -229,13 +236,14 @@ const Chat = () => {
 
     function handleRightClick(e, uid) // TODO: how can I make these call in order?
     {
+        //TODO: if user is already in room, do not show 'invite to room on menu'
         e.preventDefault();
 
         setXPos(e.pageX);
         setYPos(e.pageY);
         setCurrentFriend(uid);
-        alert(uid);
         setShowFriendOptions(true);
+        setCurrentFriend(''); //TODO: change this, this is bad.
     }
 
     function handleMouseLeave(){
@@ -274,7 +282,7 @@ const Chat = () => {
                                                             // TODO: create a popup menu at location of cursor on right click
                                                             onClick={() => handleInviteToRoom(friend.uid)}
                                                             onContextMenu={(e) => handleRightClick(e, friend.uid)}
-                                                            key={room._id}>
+                                                            key={friend.uid}>
                                                                 {/* TODO: add image of person here */}
                                                                 {friend.user_name}
                                                         </ListGroup.Item>)
@@ -367,7 +375,19 @@ const Chat = () => {
                     </Row>
                 </Col>
                 <Col lg="2" className="members">
-                    hi
+                    <ListGroup className="w-100 list-group-menu">
+                        Members
+                        {
+                            room.users?
+                                room.users.map((u, index) =>
+                                    <ListGroup.Item action
+                                        className="list-item-rooms"
+                                        key={index + `member-list`}>
+                                            {u.user_name}
+                                    </ListGroup.Item>) :
+                                <div></div>
+                        }
+                    </ListGroup>
                 </Col>
             </Row>
 
@@ -375,16 +395,16 @@ const Chat = () => {
                 showFriendOptions?
                 <ListGroup style={
                     {
-                        top: `${yPos}px`,
-                        left: `${xPos}px`,
+                        top: `${yPos-10}px`,
+                        left: `${xPos-10}px`,
                         position: 'absolute',
                         zIndex: '100',
                     }} onMouseLeave={handleMouseLeave}>
-                    <ListGroup.Item action>
+                    <ListGroup.Item action onClick={handleInviteToRoom}>
                         add to room
                     </ListGroup.Item>
-                    <ListGroup.Item action>
-                        direct Message
+                    <ListGroup.Item action onClick={handleAddPrivateRoom}>
+                        message
                     </ListGroup.Item>
                     <ListGroup.Item action>
                         remove friend

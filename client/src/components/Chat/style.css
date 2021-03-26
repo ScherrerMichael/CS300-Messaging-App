@@ -8,6 +8,7 @@
     --topic-color: rgb(83,83,83);
     --tab-icon-color: white;
     --tab-default-color: rgb(119, 119, 119);
+    --tab-border-color: rgb(110, 110, 110);
 }
 
 .main{
@@ -52,6 +53,7 @@
     width: 100%;
     background-color: var(--tab-default-color) !important;
     border-bottom: 1px solid white !important;
+    border-color: var(--tab-border-color) !important;
 }
 
 .nav-link.active{
