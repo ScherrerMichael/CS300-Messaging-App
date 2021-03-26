@@ -56,7 +56,7 @@ const { currentUser, signup} = useAuth();
                 resolve(res);
             })
             .catch(err => {
-                console.log(err);
+                reject(err);
             });
         })
     }

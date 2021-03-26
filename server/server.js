@@ -36,6 +36,16 @@ io.on('connection', (socket)=> { //this is so cool
         }});
     });
 
+    socket.on('create-room', (user, topic, callback) =>{
+        console.log(`user ${user.displayName} created room: ${topic}`);
+
+        callback({callback: {
+            status: 'ok',
+            server: 'created room',
+            room: topic,
+        }})
+    })
+
     socket.on('disconnect', ()=> {
         console.log('User has left!');
     })

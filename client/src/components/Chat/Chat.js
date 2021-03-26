@@ -41,9 +41,7 @@ const Chat = () => {
     const [error, setError] = useState("");
     const history = useHistory();
     const [tab, setTab] = useState('');
-    const [roomList, setRooms] = useState({
-        rooms: [null]
-    });
+    const [rooms, setRooms] = useState([]);
     const [friendsList, setFriends] = useState({
         friends: []
     });
@@ -68,7 +66,8 @@ const Chat = () => {
             getRoomsWithUser
             .then(data => {
                 if(data)
-                setRooms({ rooms: data});
+                setRooms([...data.result]);
+                // console.log(...data.result)
             })
             .catch(err => {
                 console.log(err);
@@ -78,13 +77,12 @@ const Chat = () => {
     useEffect(() => { // getting all rooms that the user is in
         let mounted = true;
 
-
         if (mounted) {
         }
             updateAllRooms();
         return () => mounted = false;
 
-    }, [])
+    },[show])
 
     useEffect(() => { // getting all rooms that the user is in
         let mounted = true;
@@ -123,18 +121,18 @@ const Chat = () => {
         .catch()
     }
 
-    function handleAddRoom() { //TODO switch chat and change element of selected element
+    async function handleAddRoom(e) { //TODO switch chat and change element of selected element
+        e.preventDefault();
 
-            setRoomName(modalRef.current.value);
-
-            postNewRoomFromUser(modalRef.current.value).then(() => {
-                //update for all rooms
-                updateAllRooms();
+            postNewRoomFromUser(modalRef.current.value)
+            .then(res => {
+                socket.emit('create-room', currentUser, modalRef.current.value, ({ callback }) => {
+                    setRooms([...rooms, res.data.createdRoom])
+                });
                 handleClose();
             }).catch(err => {
                 console.log("error with post room");
             })
-        setRoomName('');
     }
 
     function handleAddPrivateRoom() { //TODO: create room with topic name of messagee/messager
@@ -143,7 +141,7 @@ const Chat = () => {
     }
 
     function handleSwitchRoom(roomId) {
-            let r = roomList.rooms.result.find(a => a._id === roomId)
+            let r = rooms.find(a => a._id === roomId)
 
             if(r !== null)
             {
@@ -152,7 +150,6 @@ const Chat = () => {
                     // console.log(messages[0].user.user_name)
                     setMessages(messages)
                     setRoom(r);
-                    console.log(r.users);
                 })
                 .then(() => {
                     setCurrentRoomname(r.topic);
@@ -163,11 +160,11 @@ const Chat = () => {
             }
         }
 
-    async function handleLogout() {
+    function handleLogout() {
         setError('');
 
         try {
-            await logout();
+            logout();
             socket.disconnect();
             history.push('/login');
         } catch {
@@ -216,7 +213,6 @@ const Chat = () => {
     //similar to componentdidmount
     useEffect(() => {
         socket = io(`${process.env.REACT_APP_MONGO_DB_PORT}`);
-        console.log(currentUser)
 
         return () => {
             socket.off();
@@ -270,10 +266,10 @@ const Chat = () => {
                 <Col xs="3" className="contacts debug">
                     <Row className="tab-row">
                         <Tabs onSelect={handleTabChange} className="tab-container">
-                            <Tab eventKey={'home'} title={<span><HouseFill className="tab-icon"/></span>} className="filled-tab">
+                            <Tab eventKey={'home'} title={<span><HouseFill className="tab-icon"/> home</span>} className="filled-tab">
                                 {/* home stuff */}
                             </Tab>
-                            <Tab eventKey={'people'} title={<span><PersonLinesFill className="tab-icon"/></span>} className="filled-tab">
+                            <Tab eventKey={'people'} title={<span><PersonLinesFill className="tab-icon"/> people</span>} className="filled-tab">
                                 <Row className="menu">
                                     <Tab.Container>
                                         <ListGroup className="w-100 list-group-menu">
@@ -285,7 +281,7 @@ const Chat = () => {
                                                             // TODO: create a popup menu at location of cursor on right click
                                                             onClick={() => handleInviteToRoom(friend.uid)}
                                                             onContextMenu={(e) => handleRightClick(e, friend.uid)}
-                                                            key={friend.uid}>
+                                                            key={friend.uid + 'friends'}>
                                                                 {/* TODO: add image of person here */}
                                                                 {friend.user_name}
                                                         </ListGroup.Item>)
@@ -296,17 +292,17 @@ const Chat = () => {
                                     </Tab.Container>
                                 </Row>
                             </Tab>
-                            <Tab eventKey={'rooms'} title={<span><ChatLeftTextFill className="tab-icon"/></span>} className="filled-tab">
+                            <Tab eventKey={'rooms'} title={<span><ChatLeftTextFill className="tab-icon"/> rooms</span>} className="filled-tab">
                                 <Row className="menu">
                                     <Tab.Container>
                                         <ListGroup className="w-100 list-group-menu">
                                             {
-                                                roomList.rooms.result ?
-                                                    roomList.rooms.result.map(room =>
+                                                rooms?
+                                                    rooms.map(room =>
                                                         <ListGroup.Item action
                                                             className="list-item-rooms"
                                                             onClick={() => handleSwitchRoom(room._id)}
-                                                            key={room._id}>{room.topic}
+                                                            key={room._id + 'rooms'}>{room.topic}
                                                         </ListGroup.Item>) :
                                                     <div></div>
                                             }
@@ -352,7 +348,7 @@ const Chat = () => {
                                 {
                                     messages ?
                                         messages.map((message, index) =>
-                                            <ListGroupItem header="yo" className="w-100 message" key={index}>
+                                            <ListGroupItem header="yo" className="w-100 message" key={index+'message'}>
                                                 <div className="message-author">{message.user.user_name}</div>
                                                 <p>{message.message_body}</p>
                                             </ListGroupItem>) :
@@ -426,15 +422,25 @@ const Chat = () => {
                 </Modal.Header>
                 <Modal.Body>
 
-                    <Form onSubmit={handleSubmit} className="text-box">
+                    <Form className="text-box" onSubmit={
+                        (tab === 'rooms') ?
+                            handleAddRoom :
+                            handleAddUser
+                    }>
                         <Form.Group id="Message">
                             <Form.Control className="w-100 message-field" type="text" ref={modalRef} />
                         </Form.Group>
+                    <Button variant="secondary" onClick={handleClose}>
+                        Close
+                        </Button>
+                    <Button variant="primary" type="submit">
+                        Save Changes
+                        </Button>
                     </Form>
 
                 </Modal.Body>
                 <Modal.Footer>
-                    <Button variant="secondary" onClick={handleClose}>
+                    {/* <Button variant="secondary" onClick={handleClose}>
                         Close
                         </Button>
                     <Button variant="primary" type="submit" onClick={
@@ -443,7 +449,7 @@ const Chat = () => {
                             handleAddUser
                     }>
                         Save Changes
-                        </Button>
+                        </Button> */}
                 </Modal.Footer>
             </Modal>
 
