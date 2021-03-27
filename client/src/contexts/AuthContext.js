@@ -13,14 +13,15 @@ export function AuthProvider({children}) {
     const [currentUser, setCurrentUser] = useState();
     const [loading, setLoading] = useState(true);
 
-    async function signup(email, password, displayName){
-        try {
-            const result = await auth.createUserWithEmailAndPassword(email, password);
-            result.user.updateProfile({
-                displayName: displayName
-            })
+    async function signup(email, password, displayName){ //TODO: need to find way to update currentUser state
+            auth.createUserWithEmailAndPassword(email, password)
+            .then((result) => {
+                result.user.updateProfile({
+                    displayName: displayName
+                })
                 .then(() =>{
-                    auth.updateCurrentUser(result.user)})
+                    setCurrentUser({displayName: displayName})
+                })
                 .then(() =>{
                     axios.post(`${process.env.REACT_APP_MONGO_DB_PORT}/users/`, {
                         email: result.user.email,
@@ -28,10 +29,12 @@ export function AuthProvider({children}) {
                         user_name: result.user.displayName
                 })
                 })
-        } catch (error) {
-            console.log(error);
-        }
+            })
     }
+
+    useEffect(() => { //need this for forcing update on currentUser
+        console.log('current user changed')
+    }, [currentUser])
 
     async function login(email, password) {
         try {

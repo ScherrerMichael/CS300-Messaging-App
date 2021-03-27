@@ -31,6 +31,14 @@
     color: aliceblue;
 }
 
+.contacts-back{
+    background-color: var(--tab-default-color);
+    margin-left: 5%;
+    margin-top: 20px;
+    width: 90%;
+    height: 90%;
+}
+
 .contacts{
     /* margin-top: 50px; */
     /* margin-right: 30px;
@@ -67,6 +75,25 @@
 
 .tab-icon:focus{
     color: var(--tab-icon-color-selected);
+}
+
+.room-details{
+    height: 50%;
+}
+.details{
+    background-color: var(--tab-default-color);
+    margin: 10%;
+    width: 90%;
+    height: 90%;
+    text-align: center;
+}
+
+.member-details{
+    height: 50%;
+}
+
+.list-members{
+    text-align: center;
 }
 
 .list-group-menu{

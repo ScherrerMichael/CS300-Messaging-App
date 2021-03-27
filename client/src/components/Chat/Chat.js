@@ -208,6 +208,7 @@ const Chat = () => {
         } else {
             console.log('You need to be in a room!');
         }
+        setCurrentFriend('');
     }
 
     //similar to componentdidmount
@@ -220,6 +221,8 @@ const Chat = () => {
     }, [`${process.env.REACT_APP_MONGO_DB_PORT}`]);
 
     useEffect(() => {
+
+        console.log(currentUser)
 
         socket.on(`welcome`, (messageBody) => {
             console.log(messageBody);
@@ -237,11 +240,11 @@ const Chat = () => {
         //TODO: if user is already in room, do not show 'invite to room on menu'
         e.preventDefault();
 
+        setCurrentFriend(uid);
         setXPos(e.pageX);
         setYPos(e.pageY);
         setCurrentFriend(uid);
         setShowFriendOptions(true);
-        setCurrentFriend(''); //TODO: change this, this is bad.
     }
 
     function handleMouseLeave(){
@@ -253,7 +256,7 @@ const Chat = () => {
             <Row className="top-row">
                 <Col md="6" className="user-header-back">
                     {/* for some reason, users display name is not show on start when signing up */}
-                    <strong className="user-header">{currentUser.email}</strong>
+                    <strong className="user-header">{currentUser.displayName}</strong>
                     <Button variant="link" onClick={handleLogout}>Log out</Button>
                 </Col>
                 <Col>
@@ -279,7 +282,6 @@ const Chat = () => {
                                                         <ListGroup.Item action
                                                             className="list-item-rooms"
                                                             // TODO: create a popup menu at location of cursor on right click
-                                                            onClick={() => handleInviteToRoom(friend.uid)}
                                                             onContextMenu={(e) => handleRightClick(e, friend.uid)}
                                                             key={friend.uid + 'friends'}>
                                                                 {/* TODO: add image of person here */}
@@ -311,7 +313,6 @@ const Chat = () => {
                                 </Row>
                             </Tab>
                         </Tabs>
-
                     </Row>
 
 
@@ -374,19 +375,31 @@ const Chat = () => {
                     </Row>
                 </Col>
                 <Col lg="2" className="members">
-                    <ListGroup className="w-100 list-group-menu">
-                        Members
-                        {
-                            room.users?
-                                room.users.map((u, index) =>
-                                    <ListGroup.Item action
-                                        className="list-item-rooms"
-                                        key={index + `member-list`}>
-                                            {u.user_name}
-                                    </ListGroup.Item>) :
-                                <div></div>
-                        }
-                    </ListGroup>
+                    <Row className="room-details">
+                        <div className="details">{
+                            room?
+                            <div>
+                                {/* room info will go here! */}
+                                {room.topic} 
+                            </div>:
+                            <di></di>
+                        }</div>
+                    </Row>
+                    <Row className="member-details">
+                        <ListGroup className="w-100 list-members">
+                            Members
+                            {
+                                room.users?
+                                    room.users.map((u, index) =>
+                                        <ListGroup.Item action
+                                            className="list-item-rooms"
+                                            key={index + `member-list`}>
+                                                {u.user_name}
+                                        </ListGroup.Item>) :
+                                    <div></div>
+                            }
+                        </ListGroup>
+                    </Row>
                 </Col>
             </Row>
 
