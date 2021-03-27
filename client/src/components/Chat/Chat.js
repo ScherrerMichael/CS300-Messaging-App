@@ -113,7 +113,7 @@ const Chat = () => {
 
         postMessageToRoom(room._id, messageRef.current.value)
         .then(message => {
-            socket.emit('sendMessage', currentUser, room, message, ({ callback }) => {
+            socket.emit('send-message', currentUser, room._id, message, ({ callback }) => {
                 setMessages([...messages, message]);
             });
             handleReset();
@@ -153,7 +153,7 @@ const Chat = () => {
                 })
                 .then(() => {
                     setCurrentRoomname(r.topic);
-                    socket.emit('join', currentUser.displayName, r, ({ message }) => {
+                    socket.emit('join', currentUser.displayName, r._id, ({ message }) => {
                         console.log(message);
                     });
                 })
@@ -222,13 +222,12 @@ const Chat = () => {
 
     useEffect(() => {
 
-        console.log(currentUser)
-
         socket.on(`welcome`, (messageBody) => {
             console.log(messageBody);
         })
 
-        socket.on('re', (result) => {
+        socket.on('message-recieved', (result) => {
+            console.log(result)
             setMessages(prevMessages => ([...prevMessages, result.message]));
         })
 

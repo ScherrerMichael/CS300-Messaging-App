@@ -14,17 +14,16 @@ const io = socketio(server, {
 
 io.on('connection', (socket)=> { //this is so cool
 
-    socket.on('join', (user, room, callback) =>{
-        socket.join(room._id);
-        console.log(`user ${user} has joined: ${room._id}`);
-        io.to(room._id).emit('welcome', `welcome, ${user}.`);
-        //callback({message: `from server: ${user} has joined room: "${room.topic}"`})
+    socket.on('join', (user, roomId, callback) =>{
+        socket.join(roomId);
+        console.log(`user ${user} has joined: ${roomId}`);
+        io.to(roomId).emit('welcome', `welcome, ${user}.`);
     });
 
-    socket.on('sendMessage', (user, room, message, callback) =>{
+    socket.on('send-message', (user, room, message, callback) =>{
         console.log(`${user.displayName}: ${message.message_body} ; ${room}`);
 
-        socket.to(room).emit('re', {
+        socket.to(room).emit('message-recieved', {
             user: user.displayname,
             message: message
         })
