@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
-import {PlusSquare, PersonLinesFill, HouseFill, ChatLeftTextFill} from 'react-bootstrap-icons';
-import { useAuth , AuthProvider} from '../../contexts/AuthContext';
+import UserHeader from './UserHeader/UserHeader'
+import { PlusSquare, PersonLinesFill, HouseFill, ChatLeftTextFill } from 'react-bootstrap-icons';
+import { useAuth, AuthProvider } from '../../contexts/AuthContext';
 import { useRequest } from '../../contexts/HttpRequestContext';
 import { Link, useHistory } from 'react-router-dom';
 import style from './style.css'
@@ -17,6 +18,8 @@ import {
     Modal,
     Card,
     ListGroupItem,
+    OverlayTrigger,
+    Tooltip,
 } from 'react-bootstrap'
 import ScrollToBottom from 'react-scroll-to-bottom';
 import axios from 'axios';
@@ -25,12 +28,12 @@ import io from 'socket.io-client'
 let socket;
 
 const Chat = () => {
-    const { currentUser, logout} = useAuth();
+    const { currentUser, logout } = useAuth();
     const { postNewRoomFromUser,
-            getRoomsWithUser,
-            getRoomMessages,
-            postMessageToRoom,
-            getUserFromId,
+        getRoomsWithUser,
+        getRoomMessages,
+        postMessageToRoom,
+        getUserFromId,
     } = useRequest();
 
     const [show, setShow] = useState(false);
@@ -38,7 +41,7 @@ const Chat = () => {
     const handleClose = () => setShow(false);
     const handleShow = () => setShow(true);
 
-    const [error, setError] = useState("");
+    const [error, setError] = useState(""); // TODO: shoul use this more often
     const history = useHistory();
     const [tab, setTab] = useState('');
     const [rooms, setRooms] = useState([]);
@@ -47,12 +50,12 @@ const Chat = () => {
     });
     const [messages, setMessages] = useState([]);
     const [room, setRoom] = useState({});
-    const [roomName, setRoomName] = useState('');
+    // const [roomName, setRoomName] = useState('');
     const [currentRoomName, setCurrentRoomname] = useState('');
     const modalRef = useRef();
     const formRef = useRef();
     const messageRef = useRef();
-    const [message, setMessage] = useState({});
+    // const [message, setMessage] = useState({});
     const [xPos, setXPos] = useState('0px');
     const [yPos, setYPos] = useState('0px');
     const [showFriendOptions, setShowFriendOptions] = useState(false);
@@ -62,11 +65,11 @@ const Chat = () => {
         setTab(tab);
     }
 
-    function updateAllRooms(){
-            getRoomsWithUser
+    function updateAllRooms() {
+        getRoomsWithUser
             .then(data => {
-                if(data)
-                setRooms([...data.result]);
+                if (data)
+                    setRooms([...data.result]);
                 // console.log(...data.result)
             })
             .catch(err => {
@@ -79,10 +82,10 @@ const Chat = () => {
 
         if (mounted) {
         }
-            updateAllRooms();
+        updateAllRooms();
         return () => mounted = false;
 
-    },[show])
+    }, [show])
 
     useEffect(() => { // getting all rooms that the user is in
         let mounted = true;
@@ -98,33 +101,32 @@ const Chat = () => {
                 console.log(err);
             });
 
-
         return () => mounted = false;
 
     }, [tab])
 
     function handleReset() {
         formRef.current.reset(); //reset the value of the form stuff
-        setMessage({});
+        // setMessage({});
     }
 
     async function handleSubmit(e) { //post a message to the room
         e.preventDefault();
 
         postMessageToRoom(room._id, messageRef.current.value)
-        .then(message => {
-            socket.emit('send-message', currentUser, room._id, message, ({ callback }) => {
-                setMessages([...messages, message]);
-            });
-            handleReset();
-        })
-        .catch()
+            .then(message => {
+                socket.emit('send-message', currentUser, room._id, message, ({ callback }) => {
+                    setMessages([...messages, message]);
+                });
+                handleReset();
+            })
+            .catch()
     }
 
     async function handleAddRoom(e) { //TODO switch chat and change element of selected element
         e.preventDefault();
 
-            postNewRoomFromUser(modalRef.current.value)
+        postNewRoomFromUser(modalRef.current.value)
             .then(res => {
                 socket.emit('create-room', currentUser, modalRef.current.value, ({ callback }) => {
                     setRooms([...rooms, res.data.createdRoom])
@@ -141,12 +143,11 @@ const Chat = () => {
     }
 
     function handleSwitchRoom(roomId) {
-            let r = rooms.find(a => a._id === roomId)
+        let r = rooms.find(a => a._id === roomId)
 
-            if(r !== null)
-            {
-                getRoomMessages(roomId)
-                .then(messages =>{
+        if (r !== null) {
+            getRoomMessages(roomId)
+                .then(messages => {
                     // console.log(messages[0].user.user_name)
                     setMessages(messages)
                     setRoom(r);
@@ -157,8 +158,8 @@ const Chat = () => {
                         console.log(message);
                     });
                 })
-            }
         }
+    }
 
     function handleLogout() {
         setError('');
@@ -177,10 +178,10 @@ const Chat = () => {
             user_name: modalRef.current.value
         })
             .then(() => {
-                axios.get(`${process.env.REACT_APP_MONGO_DB_PORT}/users/${currentUser.uid}/friends`)
+                axios.get(`${process.env.REACT_APP_MONGO_DB_PORT}/users/${currentUser.uid}/friends`) // TODO: test this
                     .then(res => {
-                        //console.log(res)
-                        //setFriends({friendsList: res.data})
+                        console.log(res)
+                        setFriends({ friendsList: res.data })
                     })
                     .catch(err => {
                         console.log(err);
@@ -246,32 +247,34 @@ const Chat = () => {
         setShowFriendOptions(true);
     }
 
-    function handleMouseLeave(){
+    function handleMouseLeave() {
         setShowFriendOptions(false);
     }
 
+    const renderInviteToolTip = (props) => (
+        <Tooltip id="invite-tooltip" {...props}>
+            hi!
+        </Tooltip>
+    );
+
+
     return (
         <Container fluid className="main">
-            <Row className="top-row">
+            {/* <Row className="top-row">
                 <Col md="6" className="user-header-back">
-                    {/* for some reason, users display name is not show on start when signing up */}
                     <strong className="user-header">{currentUser.displayName}</strong>
                     <Button variant="link" onClick={handleLogout}>Log out</Button>
                 </Col>
-                <Col>
-                </Col>
-                <Col>
-                    {/*  */}
-                </Col>
-            </Row>
+            </Row> */}
+            <UserHeader currentUser={currentUser} handleLogout={handleLogout}></UserHeader>
             <Row className="main-row">
                 <Col xs="3" className="contacts debug">
                     <Row className="tab-row">
                         <Tabs onSelect={handleTabChange} className="tab-container">
-                            <Tab eventKey={'home'} title={<span><HouseFill className="tab-icon"/> home</span>} className="filled-tab">
+                            <Tab eventKey={'home'} title={<span><HouseFill className="tab-icon" /> home</span>} className="filled-tab">
                                 {/* home stuff */}
                             </Tab>
-                            <Tab eventKey={'people'} title={<span><PersonLinesFill className="tab-icon"/> people</span>} className="filled-tab">
+                            <Tab eventKey={'people'} title={<span><PersonLinesFill className="tab-icon" /> people</span>} className="filled-tab">
                                 <Row className="menu">
                                     <Tab.Container>
                                         <ListGroup className="w-100 list-group-menu">
@@ -283,8 +286,8 @@ const Chat = () => {
                                                             // TODO: create a popup menu at location of cursor on right click
                                                             onContextMenu={(e) => handleRightClick(e, friend.uid)}
                                                             key={friend.uid + 'friends'}>
-                                                                {/* TODO: add image of person here */}
-                                                                {friend.user_name}
+                                                            {/* TODO: add image of person here */}
+                                                            {friend.user_name}
                                                         </ListGroup.Item>)
                                                     :
                                                     <div>nothing</div>
@@ -293,12 +296,12 @@ const Chat = () => {
                                     </Tab.Container>
                                 </Row>
                             </Tab>
-                            <Tab eventKey={'rooms'} title={<span><ChatLeftTextFill className="tab-icon"/> rooms</span>} className="filled-tab">
+                            <Tab eventKey={'rooms'} title={<span><ChatLeftTextFill className="tab-icon" /> rooms</span>} className="filled-tab">
                                 <Row className="menu">
                                     <Tab.Container>
                                         <ListGroup className="w-100 list-group-menu">
                                             {
-                                                rooms?
+                                                rooms ?
                                                     rooms.map(room =>
                                                         <ListGroup.Item action
                                                             className="list-item-rooms"
@@ -320,7 +323,7 @@ const Chat = () => {
                             {
                                 (tab === 'rooms' || tab === 'people') ?
                                     <Button onClick={handleShow} className="add-room-btn">
-                                        <PlusSquare/>
+                                        <PlusSquare />
                                     </Button> :
                                     <div></div>
                             }
@@ -331,14 +334,14 @@ const Chat = () => {
                 <Col className="chat debug">
                     <Row>
                         <Col className="line"></Col>
-                    <Card className="chat-info">
-                        <Card.Body>
-                            <h1 className="small-font">
-                            {currentRoomName}
-                            </h1>
-                            {/* <Button className="invite-chat" onClick={handleInviteToRoom}>invite</Button> */}
+                        <Card className="chat-info">
+                            <Card.Body>
+                                <h1 className="small-font">
+                                    {currentRoomName}
+                                </h1>
+                                {/* <Button className="invite-chat" onClick={handleInviteToRoom}>invite</Button> */}
                             </Card.Body>
-                    </Card>
+                        </Card>
                         <Col className="line"></Col>
                     </Row>
                     <Row className="messages">
@@ -348,7 +351,7 @@ const Chat = () => {
                                 {
                                     messages ?
                                         messages.map((message, index) =>
-                                            <ListGroupItem header="yo" className="w-100 message" key={index+'message'}>
+                                            <ListGroupItem header="yo" className="w-100 message" key={index + 'message'}>
                                                 <div className="message-author">{message.user.user_name}</div>
                                                 <p>{message.message_body}</p>
                                             </ListGroupItem>) :
@@ -376,24 +379,24 @@ const Chat = () => {
                 <Col lg="2" className="members">
                     <Row className="room-details">
                         <div className="details">{
-                            room?
-                            <div>
-                                {/* room info will go here! */}
-                                {room.topic} 
-                            </div>:
-                            <di></di>
+                            room ?
+                                <div>
+                                    {/* room info will go here! */}
+                                    {room.topic}
+                                </div> :
+                                <di></di>
                         }</div>
                     </Row>
                     <Row className="member-details">
                         <ListGroup className="w-100 list-members">
                             Members
                             {
-                                room.users?
+                                room.users ?
                                     room.users.map((u, index) =>
                                         <ListGroup.Item action
                                             className="list-item-rooms"
                                             key={index + `member-list`}>
-                                                {u.user_name}
+                                            {u.user_name}
                                         </ListGroup.Item>) :
                                     <div></div>
                             }
@@ -403,24 +406,29 @@ const Chat = () => {
             </Row>
 
             {
-                showFriendOptions?
-                <ListGroup style={
-                    {
-                        top: `${yPos-10}px`,
-                        left: `${xPos-10}px`,
-                        position: 'absolute',
-                        zIndex: '100',
-                    }} onMouseLeave={handleMouseLeave}>
-                    <ListGroup.Item action onClick={handleInviteToRoom}>
-                        add to room
+                showFriendOptions ?
+                    <ListGroup style={
+                        {
+                            top: `${yPos - 10}px`,
+                            left: `${xPos - 10}px`,
+                            position: 'absolute',
+                            zIndex: '100',
+                        }} onMouseLeave={handleMouseLeave}>
+                        <ListGroup.Item action onClick={handleAddPrivateRoom}>
+                            message
                     </ListGroup.Item>
-                    <ListGroup.Item action onClick={handleAddPrivateRoom}>
-                        message
+                        <OverlayTrigger
+                            placement="right"
+                            delay={{ show: 250, hide: 200 }}
+                            overlay={renderInviteToolTip}>
+                            <ListGroup.Item action onClick={handleInviteToRoom}>
+                                add to room
+                            </ListGroup.Item>
+                        </OverlayTrigger>
+                        <ListGroup.Item action>
+                            remove friend
                     </ListGroup.Item>
-                    <ListGroup.Item action>
-                        remove friend
-                    </ListGroup.Item>
-                </ListGroup>: null
+                    </ListGroup> : null
             }
 
 
@@ -442,11 +450,11 @@ const Chat = () => {
                         <Form.Group id="Message">
                             <Form.Control className="w-100 message-field" type="text" ref={modalRef} />
                         </Form.Group>
-                    <Button variant="secondary" onClick={handleClose}>
-                        Close
+                        <Button variant="secondary" onClick={handleClose}>
+                            Close
                         </Button>
-                    <Button variant="primary" type="submit">
-                        Save Changes
+                        <Button variant="primary" type="submit">
+                            Save Changes
                         </Button>
                     </Form>
 
