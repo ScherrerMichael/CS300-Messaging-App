@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import UserHeader from './UserHeader/UserHeader'
+import LeftPanel from './LeftPanel/LeftPanel'
 import { PlusSquare, PersonLinesFill, HouseFill, ChatLeftTextFill } from 'react-bootstrap-icons';
 import { useAuth, AuthProvider } from '../../contexts/AuthContext';
 import { useRequest } from '../../contexts/HttpRequestContext';
@@ -260,77 +261,17 @@ const Chat = () => {
 
     return (
         <Container fluid className="main">
-            {/* <Row className="top-row">
-                <Col md="6" className="user-header-back">
-                    <strong className="user-header">{currentUser.displayName}</strong>
-                    <Button variant="link" onClick={handleLogout}>Log out</Button>
-                </Col>
-            </Row> */}
             <UserHeader currentUser={currentUser} handleLogout={handleLogout}></UserHeader>
             <Row className="main-row">
-                <Col xs="3" className="contacts debug">
-                    <Row className="tab-row">
-                        <Tabs onSelect={handleTabChange} className="tab-container">
-                            <Tab eventKey={'home'} title={<span><HouseFill className="tab-icon" /> home</span>} className="filled-tab">
-                                {/* home stuff */}
-                            </Tab>
-                            <Tab eventKey={'people'} title={<span><PersonLinesFill className="tab-icon" /> people</span>} className="filled-tab">
-                                <Row className="menu">
-                                    <Tab.Container>
-                                        <ListGroup className="w-100 list-group-menu">
-                                            {
-                                                friendsList.friends.friends ?
-                                                    friendsList.friends.friends.map(friend =>
-                                                        <ListGroup.Item action
-                                                            className="list-item-rooms"
-                                                            // TODO: create a popup menu at location of cursor on right click
-                                                            onContextMenu={(e) => handleRightClick(e, friend.uid)}
-                                                            key={friend.uid + 'friends'}>
-                                                            {/* TODO: add image of person here */}
-                                                            {friend.user_name}
-                                                        </ListGroup.Item>)
-                                                    :
-                                                    <div>nothing</div>
-                                            }
-                                        </ListGroup>
-                                    </Tab.Container>
-                                </Row>
-                            </Tab>
-                            <Tab eventKey={'rooms'} title={<span><ChatLeftTextFill className="tab-icon" /> rooms</span>} className="filled-tab">
-                                <Row className="menu">
-                                    <Tab.Container>
-                                        <ListGroup className="w-100 list-group-menu">
-                                            {
-                                                rooms ?
-                                                    rooms.map(room =>
-                                                        <ListGroup.Item action
-                                                            className="list-item-rooms"
-                                                            onClick={() => handleSwitchRoom(room._id)}
-                                                            key={room._id + 'rooms'}>{room.topic}
-                                                        </ListGroup.Item>) :
-                                                    <div></div>
-                                            }
-                                        </ListGroup>
-                                    </Tab.Container>
-                                </Row>
-                            </Tab>
-                        </Tabs>
-                    </Row>
-
-
-                    <Row className="add-item">
-                        <Col className="add-item">
-                            {
-                                (tab === 'rooms' || tab === 'people') ?
-                                    <Button onClick={handleShow} className="add-room-btn">
-                                        <PlusSquare />
-                                    </Button> :
-                                    <div></div>
-                            }
-                        </Col>
-                    </Row>
-                </Col>
-
+                <LeftPanel
+                    handleTabChange={handleTabChange}
+                    friendsList={friendsList}
+                    handleRightClick={handleRightClick}
+                    rooms={rooms}
+                    handleSwitchRoom={handleSwitchRoom}
+                    handleShow={handleShow}
+                    tab={tab}
+                ></LeftPanel>
                 <Col className="chat debug">
                     <Row>
                         <Col className="line"></Col>
