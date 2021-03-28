@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import UserHeader from './UserHeader/UserHeader'
 import LeftPanel from './LeftPanel/LeftPanel'
+import MiddlePanel from './MiddlePanel/MiddlePanel'
 import { PlusSquare, PersonLinesFill, HouseFill, ChatLeftTextFill } from 'react-bootstrap-icons';
 import { useAuth, AuthProvider } from '../../contexts/AuthContext';
 import { useRequest } from '../../contexts/HttpRequestContext';
@@ -263,6 +264,7 @@ const Chat = () => {
         <Container fluid className="main">
             <UserHeader currentUser={currentUser} handleLogout={handleLogout}></UserHeader>
             <Row className="main-row">
+
                 <LeftPanel
                     handleTabChange={handleTabChange}
                     friendsList={friendsList}
@@ -272,51 +274,15 @@ const Chat = () => {
                     handleShow={handleShow}
                     tab={tab}
                 ></LeftPanel>
-                <Col className="chat debug">
-                    <Row>
-                        <Col className="line"></Col>
-                        <Card className="chat-info">
-                            <Card.Body>
-                                <h1 className="small-font">
-                                    {currentRoomName}
-                                </h1>
-                                {/* <Button className="invite-chat" onClick={handleInviteToRoom}>invite</Button> */}
-                            </Card.Body>
-                        </Card>
-                        <Col className="line"></Col>
-                    </Row>
-                    <Row className="messages">
-                        {/* scroll to bottom will be fixed soon i guess, it will debug in console */}
-                        <ScrollToBottom className="w-100" debug={false}>
-                            <ListGroup className="w-100">
-                                {
-                                    messages ?
-                                        messages.map((message, index) =>
-                                            <ListGroupItem header="yo" className="w-100 message" key={index + 'message'}>
-                                                <div className="message-author">{message.user.user_name}</div>
-                                                <p>{message.message_body}</p>
-                                            </ListGroupItem>) :
-                                        <div>...</div>
-                                }
-                            </ListGroup>
-                        </ScrollToBottom>
-                    </Row>
 
-                    <Row className="text-field-row">
-                        <Form ref={formRef} onSubmit={handleSubmit} className="text-box">
-                            <Form.Row>
-                                <Col className="form-text-field">
-                                    <Form.Group id="Message">
-                                        <Form.Control className="w-100 message-field" type="text" ref={messageRef} />
-                                    </Form.Group>
-                                </Col>
-                                <Col xs='1' className="form-button-submit">
-                                    <Button className="w-100" type="submit">Send</Button>
-                                </Col>
-                            </Form.Row>
-                        </Form>
-                    </Row>
-                </Col>
+                <MiddlePanel
+                    room={room}
+                    messages={messages}
+                    handleSubmit={handleSubmit}
+                    formRef={formRef}
+                    messageRef={messageRef}
+                ></MiddlePanel>
+
                 <Col lg="2" className="members">
                     <Row className="room-details">
                         <div className="details">{
