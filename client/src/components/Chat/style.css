@@ -9,6 +9,7 @@
     --tab-icon-color: white;
     --tab-default-color: rgb(119, 119, 119);
     --tab-border-color: rgb(110, 110, 110);
+    --context-main-color: var(--middle-hover)
 }
 
 .main{
@@ -106,6 +107,12 @@
 
 .list-item-rooms{
     background-color: var(--side-color) !important;
+    color: aliceblue !important;
+    border: none !important;
+}
+
+.list-item-rooms-context{
+    background-color: var(--context-main-color) !important;
     color: aliceblue !important;
     border: none !important;
 }
@@ -235,4 +242,9 @@
 .members{
     /* margin-top: 50px; */
     background-color: var(--side-color);
+}
+
+.debug-popup{
+    background-color: aqua;
+    width: 100%;
 }

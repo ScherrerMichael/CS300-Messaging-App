@@ -21,7 +21,7 @@ import {
     Card,
     ListGroupItem,
     OverlayTrigger,
-    Tooltip,
+    Popover
 } from 'react-bootstrap'
 import ScrollToBottom from 'react-scroll-to-bottom';
 import axios from 'axios';
@@ -62,6 +62,7 @@ const Chat = () => {
     const [yPos, setYPos] = useState('0px');
     const [showFriendOptions, setShowFriendOptions] = useState(false);
     const [currentFriend, setCurrentFriend] = useState('');
+    const [showRoomToolTip, setShowRoomToolTip] = useState(false);
 
     const handleTabChange = (tab) => {
         setTab(tab);
@@ -196,9 +197,9 @@ const Chat = () => {
             });
     }
 
-    function handleInviteToRoom() {
+    function handleInviteToRoom(roomId) {
         if (room) {
-            axios.post(`${process.env.REACT_APP_MONGO_DB_PORT}/rooms/${room._id}/add-user`, {
+            axios.post(`${process.env.REACT_APP_MONGO_DB_PORT}/rooms/${roomId}/add-user`, {
                 uid: currentFriend
             })
                 .then(res => {
@@ -236,9 +237,7 @@ const Chat = () => {
 
     }, []);
 
-
-    function handleRightClick(e, uid) // TODO: how can I make these call in order?
-    {
+    function handleRightClick(e, uid) {
         //TODO: if user is already in room, do not show 'invite to room on menu'
         e.preventDefault();
 
@@ -254,9 +253,23 @@ const Chat = () => {
     }
 
     const renderInviteToolTip = (props) => (
-        <Tooltip id="invite-tooltip" {...props}>
-            hi!
-        </Tooltip>
+        <Popover id="invite-tooltip" {...props}
+            onMouseOut={() => setShowRoomToolTip(false)}>
+            <Popover.Content>
+                <ListGroup className="">
+                    {
+                        rooms ?
+                            rooms.map(room =>
+                                <ListGroup.Item action
+                                    className="list-item-rooms"
+                                    onClick={() => handleInviteToRoom(room._id)}
+                                    key={room._id + 'room-invite-choice'}>{room.topic}
+                                </ListGroup.Item>) :
+                            <div></div>
+                    }
+                </ListGroup>
+            </Popover.Content>
+        </Popover>
     );
 
 
@@ -320,19 +333,28 @@ const Chat = () => {
                             left: `${xPos - 10}px`,
                             position: 'absolute',
                             zIndex: '100',
-                        }} onMouseLeave={handleMouseLeave}>
-                        <ListGroup.Item action onClick={handleAddPrivateRoom}>
+                            paddingRight: 40,
+                        }}
+                        onMouseLeave={handleMouseLeave}>
+                        <ListGroup.Item action onClick={handleAddPrivateRoom} className="list-item-rooms-context">
                             message
                     </ListGroup.Item>
-                        <OverlayTrigger
-                            placement="right"
-                            delay={{ show: 250, hide: 200 }}
-                            overlay={renderInviteToolTip}>
-                            <ListGroup.Item action onClick={handleInviteToRoom}>
-                                add to room
+                        <div
+                            onMouseOver={() => setShowRoomToolTip(true)}
+                            onMouseOut={() => setShowRoomToolTip(false)}
+                        >
+                            <OverlayTrigger
+                                placement="right-start"
+                                delay={{ show: 350, hide: 200 }}
+                                overlay={renderInviteToolTip}
+                                show={showRoomToolTip}
+                            >
+                                <ListGroup.Item className="list-item-rooms-context">
+                                    add to room
                             </ListGroup.Item>
-                        </OverlayTrigger>
-                        <ListGroup.Item action>
+                            </OverlayTrigger>
+                        </div>
+                        <ListGroup.Item action className="list-item-rooms-context">
                             remove friend
                     </ListGroup.Item>
                     </ListGroup> : null
