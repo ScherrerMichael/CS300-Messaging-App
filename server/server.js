@@ -43,6 +43,29 @@ io.on('connection', (socket)=> { //this is so cool
             server: 'created room',
             room: topic,
         }})
+    });
+
+    socket.on('add-friend', (sender, reciepient, callback) => {
+        console.log(`user ${sender.displayName} has send a freind request to: ${reciepient}`)
+
+        callback({callback: {
+            status: 'ok',
+            sender: sender.uid,
+            reciepient: reciepient,
+        }})
+    });
+
+
+    socket.on('remove-friend', (userId, removedId, callback) => {
+        console.log(`user ${userId} removed friendId: ${removedId}`);
+
+        socket.broadcast.emit('remove-friend-response', userId, removedId);
+            callback({callback: {
+                status: 'ok',
+                server: 'removed friend',
+                removed: removedId,
+            }})
+
     })
 
     socket.on('disconnect', ()=> {

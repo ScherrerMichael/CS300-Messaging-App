@@ -13,7 +13,7 @@ app.use(bodyParser.urlencoded({extended: false}));
 app.use(bodyParser.json());
 
 mongoose.connect('mongodb+srv://admin:'
-+process.env.MONGO_DB_PASSWORD+
++process.env.MONGO_DB_PASSWORD +
 '@cluster0.axmp4.mongodb.net/myFirstDatabase?retryWrites=true&w=majority',
 {
     useNewUrlParser: true,
@@ -23,11 +23,10 @@ mongoose.connect('mongodb+srv://admin:'
 //for cors errors
 app.use((req, res, next) => {
     res.header('Access-Control-Allow-Origin', '*');
-    res.header('Access-Control-Allow-Headers', 'Origin, X-Requsted-With,Content-Type, Accept, Authorization');
+    res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With,Content-Type, Accept, Authorization');
 
     if(req.method === 'OPTIONS') {
-        res.header('Acess-Control-Allow-Methods', 'PUT, POST, PATCH', 
-        'DELETE, GET');
+        res.header('Acess-Control-Allow-Methods', 'PUT, POST, PATCH, DELETE, GET');
         return res.status(200).json({});
     }
     next();

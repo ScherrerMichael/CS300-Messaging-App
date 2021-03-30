@@ -31,11 +31,13 @@ let socket;
 
 const Chat = () => {
     const { currentUser, logout } = useAuth();
-    const { postNewRoomFromUser,
+    const { 
+        postNewRoomFromUser,
         getRoomsWithUser,
         getRoomMessages,
         postMessageToRoom,
-        getUserFromId,
+        deleteFriend,
+        addFriend,
     } = useRequest();
 
     const [show, setShow] = useState(false);
@@ -97,7 +99,8 @@ const Chat = () => {
         axios.get(`${process.env.REACT_APP_MONGO_DB_PORT}/users/${currentUser.uid}`)
             .then(res => {
                 if (mounted) {
-                    setFriends({ friends: res.data })
+                    console.log(res.data)
+                    setFriends({ friends: res.data.friends})
                 }
             })
             .catch(err => {
@@ -140,7 +143,10 @@ const Chat = () => {
             })
     }
 
-    function handleAddPrivateRoom() { //TODO: create room with topic name of messagee/messager
+    function handleDirectMessage() { //TODO: create room with topic name of messagee/messager
+        //if there is no room already with friend create one and join it, (room will have no owner)
+        //handleAddPrivateRoom()
+        //else join room
         console.log('to be implmented')
         setShowFriendOptions(false);
     }
@@ -164,6 +170,37 @@ const Chat = () => {
         }
     }
 
+    function handleAddUser(e) {
+        e.preventDefault();
+            addFriend(modalRef.current.value)
+            .then(res => {
+                    socket.emit('add-friend', currentUser, currentFriend, ({callback}) => {
+                        // console.log(res.data.result.friends)
+                        setFriends({friends: res.data.result.friends})
+                    })
+            })
+            .catch(err => {
+                console.log(err);
+            });
+                handleClose();
+    }
+
+    function handleRemoveFriend(e)
+    {
+        e.preventDefault();
+
+        deleteFriend(currentFriend)
+        .then((res) => {
+            console.log(res);
+            socket.emit('remove-friend', currentUser, currentFriend, ({callback}) => {
+                setFriends(res.data.result.friends)
+            })
+        })
+        .catch(err => {
+            console.log(err)
+        })
+    }
+
     function handleLogout() {
         setError('');
 
@@ -176,26 +213,6 @@ const Chat = () => {
         }
     }
 
-    function handleAddUser() {
-        axios.post(`${process.env.REACT_APP_MONGO_DB_PORT}/users/${currentUser.uid}/add-friend`, {
-            user_name: modalRef.current.value
-        })
-            .then(() => {
-                axios.get(`${process.env.REACT_APP_MONGO_DB_PORT}/users/${currentUser.uid}/friends`) // TODO: test this
-                    .then(res => {
-                        console.log(res)
-                        setFriends({ friendsList: res.data })
-                    })
-                    .catch(err => {
-                        console.log(err);
-                    });
-                setFriends()
-                handleClose();
-            })
-            .catch(err => {
-                console.log(err);
-            });
-    }
 
     function handleInviteToRoom(roomId) {
         if (room) {
@@ -235,6 +252,13 @@ const Chat = () => {
             setMessages(prevMessages => ([...prevMessages, result.message]));
         })
 
+        socket.on('remove-friend-reponse', (userId, removedId) =>{
+            if(currentUser.uid === removedId)
+            {
+                    console.log('A user removed me as a friend :(')
+            }
+        })
+
     }, []);
 
     function handleRightClick(e, uid) {
@@ -251,6 +275,7 @@ const Chat = () => {
     function handleMouseLeave() {
         setShowFriendOptions(false);
     }
+
 
     const renderInviteToolTip = (props) => (
         <Popover id="invite-tooltip" {...props}
@@ -336,7 +361,7 @@ const Chat = () => {
                             paddingRight: 40,
                         }}
                         onMouseLeave={handleMouseLeave}>
-                        <ListGroup.Item action onClick={handleAddPrivateRoom} className="list-item-rooms-context">
+                        <ListGroup.Item action onClick={handleDirectMessage} className="list-item-rooms-context">
                             message
                     </ListGroup.Item>
                         <div
@@ -354,7 +379,7 @@ const Chat = () => {
                             </ListGroup.Item>
                             </OverlayTrigger>
                         </div>
-                        <ListGroup.Item action className="list-item-rooms-context">
+                        <ListGroup.Item action className="list-item-rooms-context" onClick={handleRemoveFriend}>
                             remove friend
                     </ListGroup.Item>
                     </ListGroup> : null

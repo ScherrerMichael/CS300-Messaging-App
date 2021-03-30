@@ -61,6 +61,22 @@ const { currentUser, signup} = useAuth();
         })
     }
     
+    let addFriend = function(userName)
+    {
+        return new Promise(function(resolve, reject){
+
+            axios.post(`${process.env.REACT_APP_MONGO_DB_PORT}/users/${currentUser.uid}/add-friend`, {
+                user_name: userName,
+            })
+            .then(res => {
+                resolve(res)
+            })
+            .catch(err => {
+                reject(err);
+            })
+
+        })
+    }
 
 
     let getRoomsWithUser = new Promise(function(resolve, reject){
@@ -119,6 +135,24 @@ const { currentUser, signup} = useAuth();
         })
     }
 
+    let deleteFriend = function(friendId)
+    {
+        const friendToRemove = {
+            friend_uid: friendId,
+        }
+
+        return new Promise(function(resolve, reject){
+
+            axios.post(`${process.env.REACT_APP_MONGO_DB_PORT}/users/${currentUser.uid}/friends`, friendToRemove)
+            .then(res => {
+                resolve(res);
+            })
+            .catch(err => {
+                reject(err);
+            });
+        })
+    }
+
     const value = {
         postNewUser,
         postNewRoomFromUser,
@@ -126,6 +160,8 @@ const { currentUser, signup} = useAuth();
         getRoomMessages,
         postMessageToRoom,
         getUserFromId,
+        deleteFriend,
+        addFriend,
     }
 
     return (

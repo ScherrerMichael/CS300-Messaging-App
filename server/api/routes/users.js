@@ -125,7 +125,8 @@ router.post('/:userId/add-friend', (req, res, next) => {
                     res.status(201).json({
                         message: 'user added',
                         requestUid: from,
-                        recipientUid: reciever.uid
+                        recipientUid: reciever.uid,
+                        result: sender,
                     })
 
 
@@ -200,6 +201,7 @@ router.get('/:userId', (req, res, next) =>{
     });
 });
 
+//Update fields
 router.patch('/:userId', (req, res, next) => {
     const id = req.params.userId;
     const updateOps ={};
@@ -221,6 +223,38 @@ router.patch('/:userId', (req, res, next) => {
     });
 })
 
+//remove a user's friend with uid //!!!!TODO: for some reason Patch/Delete requests do not work on chrome!!
+router.post('/:userId/friends', (req, res, next) => {
+
+    const id = req.params.userId;
+    const friendId = req.body.friend_uid;
+
+    User.find
+
+    User.findOneAndUpdate({uid: id}, {$pull: {'friends': {'uid': friendId}} })
+    .exec()
+    .then(() => { // remove the user from the other list
+        User.findOneAndUpdate({uid: friendId}, {$pull: {'friends': {'uid': id}} })
+        .exec()
+        .then(result => {
+            console.log(result)
+            res.status(200).json({
+                message: 'friends list updated',
+                user: id,
+                removed: friendId,
+                result: result,
+            })
+        })
+    })
+    .catch(err => {
+        res.status(500).json({
+            error: err
+        })
+    })
+
+})
+
+//DELETE a user with id
 router.delete('/:userId', (req, res, next) => {
     const id = req.params.userId;
     User.remove({uid: id})

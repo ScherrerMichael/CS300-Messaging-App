@@ -33,8 +33,8 @@ class LeftPanel extends Component {
                                     <Tab.Container>
                                         <ListGroup className="w-100 list-group-menu">
                                             {
-                                                friendsList.friends.friends ?
-                                                    friendsList.friends.friends.map(friend =>
+                                                friendsList.friends ?
+                                                    friendsList.friends.map(friend =>
                                                         <ListGroup.Item action
                                                             className="list-item-rooms"
                                                             // TODO: create a popup menu at location of cursor on right click
@@ -44,7 +44,7 @@ class LeftPanel extends Component {
                                                             {friend.user_name}
                                                         </ListGroup.Item>)
                                                     :
-                                                    <div>nothing</div>
+                                                    <div></div>
                                             }
                                         </ListGroup>
                                     </Tab.Container>
