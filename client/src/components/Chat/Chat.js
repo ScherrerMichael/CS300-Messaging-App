@@ -94,7 +94,7 @@ const Chat = () => {
 
     useEffect(() => { // getting all rooms that the user is in
         let mounted = true;
-
+        console.log(friendsList)
         //update friends //this is ugly...
         axios.get(`${process.env.REACT_APP_MONGO_DB_PORT}/users/${currentUser.uid}`)
             .then(res => {
@@ -172,17 +172,25 @@ const Chat = () => {
 
     function handleAddUser(e) {
         e.preventDefault();
-            addFriend(modalRef.current.value)
-            .then(res => {
-                    socket.emit('add-friend', currentUser, currentFriend, ({callback}) => {
-                        // console.log(res.data.result.friends)
-                        setFriends({friends: res.data.result.friends})
-                    })
-            })
-            .catch(err => {
-                console.log(err);
-            });
-                handleClose();
+
+            let friend = friendsList.friends.find(u => u.user_name === modalRef.current.value)
+
+            if(!friend)
+            {
+                addFriend(modalRef.current.value)
+                .then(res => {
+                        socket.emit('add-friend', currentUser, currentFriend, ({callback}) => {
+                            // console.log(res.data.result.friends)
+                            setFriends({friends: res.data.result.friends})
+                        })
+                })
+                .catch(err => {
+                    console.log(err);
+                });
+                    handleClose();
+            } else {
+                console.log('friend already exists')
+            }
     }
 
     function handleRemoveFriend(e)
