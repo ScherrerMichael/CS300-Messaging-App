@@ -14,7 +14,8 @@ class LeftPanel extends Component {
       const {
         handleTabChange, 
         friendsList, 
-        handleRightClick, 
+        handleRightClickFriend, 
+        handleRightClickRoom, 
         rooms, 
         handleSwitchRoom, 
         handleShow,
@@ -38,7 +39,7 @@ class LeftPanel extends Component {
                                                         <ListGroup.Item action
                                                             className="list-item-rooms"
                                                             // TODO: create a popup menu at location of cursor on right click
-                                                            onContextMenu={(e) => handleRightClick(e, friend.uid)}
+                                                            onContextMenu={(e) => handleRightClickFriend(e, friend.uid)}
                                                             key={friend.uid + 'friends'}>
                                                             {/* TODO: add image of person here */}
                                                             {friend.user_name}
@@ -60,6 +61,7 @@ class LeftPanel extends Component {
                                                         <ListGroup.Item action
                                                             className="list-item-rooms"
                                                             onClick={() => handleSwitchRoom(room._id)}
+                                                            onContextMenu={(e) => handleRightClickRoom(e, room._id)}
                                                             key={room._id + 'rooms'}>{room.topic}
                                                         </ListGroup.Item>) :
                                                     <div></div>

@@ -62,7 +62,6 @@ router.post('/:userId', (req, res, next) => {
     var userId = req.params.userId;
     var roomTopic = req.body.topic;
     var room;
-    const user = new User();
 
     User.findOne({uid: userId})
     .exec()
@@ -87,6 +86,56 @@ router.post('/:userId', (req, res, next) => {
                     error: err
                 })
             });
+        } else {
+            res.status(404).json({
+                message: 'No user found'
+            })
+        }
+    });
+
+});
+
+//POST a new private room, given two owners id (uid) //TODO: might make a 'is direct message' attribute
+router.post('/:userId/private', (req, res, next) => {
+    var userId = req.params.userId;
+    var otherUserId = req.body.userId;
+    var roomTopic = req.body.topic;
+    var room;
+
+    User.findOne({uid: userId})
+    .exec()
+    .then(doc => { 
+        if(doc){
+
+            User.findOne({uid: otherUserId})
+            .exec()
+            .then(doc2 =>{
+                if(doc2){
+                    room = new Room({
+                        _id: new mongoose.Types.ObjectId(),
+                        owner: [doc, doc2],
+                        topic: roomTopic,
+                    });
+                    room.save()
+                        .then( result => {
+                            console.log(result);
+                        res.status(201).json({
+                            messsage: 'created new room with owner id' + userId,
+                            createdRoom: result,
+                    })
+                        })
+                        .catch(err => {
+                            console.log(err);
+                            res.status(501).json({
+                                error: err
+                            })
+                        });
+                            } else {
+                                res.status(404).json({
+                                    message: 'second user not found'
+                                })
+                            }
+            })
         } else {
             res.status(404).json({
                 message: 'No user found'

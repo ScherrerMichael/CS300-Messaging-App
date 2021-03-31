@@ -25,7 +25,7 @@ const roomSchema = mongoose.Schema({
         }
     ],
     messages: [Message.schema],
-    owner: {type: User.schema, default: {}},
+    owner: [{type: User.schema, default: {}}],
     updated_at: {type: Date, default: Date.now},
 
 });

@@ -147,7 +147,17 @@ const Chat = () => {
         //if there is no room already with friend create one and join it, (room will have no owner)
         //handleAddPrivateRoom()
         //else join room
-        console.log('to be implmented')
+        //TODO: do this axios once a message has actaully been sent! (create a false room from client then post room)
+            axios.post(`${process.env.REACT_APP_MONGO_DB_PORT}/rooms/${currentUser.uid}/private`, {
+                topic: 'direct message',
+                userId: currentFriend
+            })
+            .then(res => {
+                console.log(res)
+            })
+            .catch(err => {
+                console.log(err)
+            });
         setShowFriendOptions(false);
     }
 
@@ -269,7 +279,7 @@ const Chat = () => {
 
     }, []);
 
-    function handleRightClick(e, uid) {
+    function handleRightClickFriend(e, uid) {
         //TODO: if user is already in room, do not show 'invite to room on menu'
         e.preventDefault();
 
@@ -278,6 +288,17 @@ const Chat = () => {
         setYPos(e.pageY);
         setCurrentFriend(uid);
         setShowFriendOptions(true);
+    }
+
+    function handleRightClickRoom(e, uid) {
+        //TODO: if user is already in room, do not show 'invite to room on menu'
+        e.preventDefault();
+
+        // setCurrentFriend(uid);
+        // setXPos(e.pageX);
+        // setYPos(e.pageY);
+        // setCurrentFriend(uid);
+        // setShowFriendOptions(true);
     }
 
     function handleMouseLeave() {
@@ -314,7 +335,8 @@ const Chat = () => {
                 <LeftPanel
                     handleTabChange={handleTabChange}
                     friendsList={friendsList}
-                    handleRightClick={handleRightClick}
+                    handleRightClickFriend={handleRightClickFriend}
+                    handleRightClickRoom={handleRightClickRoom}
                     rooms={rooms}
                     handleSwitchRoom={handleSwitchRoom}
                     handleShow={handleShow}
