@@ -8,9 +8,21 @@ const userSchema = mongoose.Schema({
     email: String,
     password: String,
     friends: [{
-        status: Number,
-        user_name: String,
-        uid: String
+        // status: Number,
+        // user_name: String,
+        // uid: String
+        uid:{
+            type: String,
+            ref: 'User'
+        },
+        
+        user_name:{
+            type: String,
+            ref: 'User'
+        },
+        
+        status: Number
+
     }],
     is_active: {type: Boolean, default: false}
 });

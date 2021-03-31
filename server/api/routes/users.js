@@ -94,66 +94,54 @@ router.post('/:userId/add-friend', (req, res, next) => {
     const from = req.params.userId;
     const to = req.body.user_name;
 
-    //find current user
-    User.findOne({uid:from})
-    .exec()
-    .then(sender => {
-        if(sender){
-            User.findOne({user_name:to})
-            .exec()
-            .then(reciever => {
-                if(reciever){
-                    //found user to add.
-                    //add bothe user into each others friends
-                    //update the added user with 'requested' code, 
-                    //update current user with 'pending' code
+    User.findOne({ user_name: to })
+        .exec()
+        .then(reciever => {
+            if (reciever) {
 
-                    sender.friends.push({
-                        user_name: reciever.user_name,
-                        uid: reciever.uid,
-                        status: 0
-                        });
-                    sender.save()
+                //found user to add.
+                //add both user into each others friends
+                //update the added user with 'requested' code, 
+                //update current user with 'pending' code
 
-                    reciever.friends.push({
-                        user_name: sender.user_name,
-                        uid: sender.uid,
-                        status: 1
-                    });
-                    reciever.save();
-
-                    res.status(201).json({
-                        message: 'user added',
-                        requestUid: from,
-                        recipientUid: reciever.uid,
-                        result: sender,
-                    })
-
-
-                } else { //no reciepient found 
-                    res.status(404).json({
-                        message: 'No valid entry found for provided uid.'
-                    })
-                }
-            })
-            .catch(err => {
-                console.log(err);
-                res.status(500).json({
-                    message: 'could not find sender',
-                    error: err
+                User.findOneAndUpdate({ uid: from }, { 'friends.User': { $ne: reciever.uid } }, {
+                    $push: {
+                        friends: reciever
+                    }
                 })
-            });
-        } else { //user to send is not found.
-            res.status(404).json({
-                message: 'could not find reciever'
+                .then(() => {
+                        User.findOneAndUpdate({ user_name: to }, { 'friends.User': { $ne: from } }, {
+                            $push: {
+                                friends: from
+                            }
+                        })
+                    })
+                    .then(() => {
+                        res.status(201).json({
+                            message: 'user added',
+                            requestUid: from,
+                            recipientUid: reciever.uid,
+                            result: sender,
+                        })
+                    })
+                    .catch(error =>{
+                        res.status(404).json({
+                            error: error
+                        })
+                    })
+            } else { //no reciepient found 
+                res.status(404).json({
+                    message: 'No valid entry found for provided uid.'
+                })
+            }
+        })
+        .catch(err => {
+            console.log(err);
+            res.status(500).json({
+                message: 'could not find reciepient',
+                error: err
             })
-        }
-    })
-    .catch(err => {
-        console.log(err);
-        res.status(500).json({error: err})
-    });
-    
+        });
 });
 
 router.post('/:userId/rooms', (req, res, next) => {
