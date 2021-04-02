@@ -26,6 +26,8 @@ import {
 import ScrollToBottom from 'react-scroll-to-bottom';
 import axios from 'axios';
 import io from 'socket.io-client'
+import RightClickFriend from './RightClickFriend/RightClickFriend';
+import RightClickRoom from './RightClickRoom/RightClickRoom';
 
 let socket;
 
@@ -56,6 +58,7 @@ const Chat = () => {
     const [room, setRoom] = useState({});
     // const [roomName, setRoomName] = useState('');
     const [currentRoomName, setCurrentRoomname] = useState('');
+    const [selectedRoom, setSelectedRoom] = useState('');
     const modalRef = useRef();
     const formRef = useRef();
     const messageRef = useRef();
@@ -63,6 +66,7 @@ const Chat = () => {
     const [xPos, setXPos] = useState('0px');
     const [yPos, setYPos] = useState('0px');
     const [showFriendOptions, setShowFriendOptions] = useState(false);
+    const [showRoomOptions, setShowRoomOptions] = useState(false);
     const [currentFriend, setCurrentFriend] = useState('');
     const [showRoomToolTip, setShowRoomToolTip] = useState(false);
 
@@ -286,25 +290,21 @@ const Chat = () => {
         setCurrentFriend(uid);
         setXPos(e.pageX);
         setYPos(e.pageY);
-        setCurrentFriend(uid);
         setShowFriendOptions(true);
     }
 
     function handleRightClickRoom(e, uid) {
-        //TODO: if user is already in room, do not show 'invite to room on menu'
         e.preventDefault();
 
-        // setCurrentFriend(uid);
-        // setXPos(e.pageX);
-        // setYPos(e.pageY);
-        // setCurrentFriend(uid);
-        // setShowFriendOptions(true);
+        setSelectedRoom(uid);
+        setXPos(e.pageX);
+        setYPos(e.pageY);
+        setShowRoomOptions(true);
     }
 
     function handleMouseLeave() {
         setShowFriendOptions(false);
     }
-
 
     const renderInviteToolTip = (props) => (
         <Popover id="invite-tooltip" {...props}
@@ -379,43 +379,35 @@ const Chat = () => {
                     </Row>
                 </Col>
             </Row>
-
             {
                 showFriendOptions ?
-                    <ListGroup style={
-                        {
-                            top: `${yPos - 10}px`,
-                            left: `${xPos - 10}px`,
-                            position: 'absolute',
-                            zIndex: '100',
-                            paddingRight: 40,
-                        }}
-                        onMouseLeave={handleMouseLeave}>
-                        <ListGroup.Item action onClick={handleDirectMessage} className="list-item-rooms-context">
-                            message
-                    </ListGroup.Item>
-                        <div
-                            onMouseOver={() => setShowRoomToolTip(true)}
-                            onMouseOut={() => setShowRoomToolTip(false)}
-                        >
-                            <OverlayTrigger
-                                placement="right-start"
-                                delay={{ show: 350, hide: 200 }}
-                                overlay={renderInviteToolTip}
-                                show={showRoomToolTip}
-                            >
-                                <ListGroup.Item className="list-item-rooms-context">
-                                    add to room
-                            </ListGroup.Item>
-                            </OverlayTrigger>
-                        </div>
-                        <ListGroup.Item action className="list-item-rooms-context" onClick={handleRemoveFriend}>
-                            remove friend
-                    </ListGroup.Item>
-                    </ListGroup> : null
+                    <RightClickFriend
+                        xPos={xPos}
+                        yPos={yPos}
+                        handleMouseLeave={handleMouseLeave}
+                        handleDirectMessage={handleDirectMessage}
+                        setShowRoomToolTip={setShowRoomToolTip}
+                        renderInviteToolTip={renderInviteToolTip}
+                        showRoomToolTip={showRoomToolTip}
+                        handleRemoveFriend={handleRemoveFriend}
+                    />
+                    : null
             }
 
-
+            {
+                showRoomOptions?
+                <RightClickRoom
+                        xPos={xPos}
+                        yPos={yPos}
+                        handleMouseLeave={handleMouseLeave}
+                        handleDirectMessage={handleDirectMessage}
+                        setShowRoomToolTip={setShowRoomToolTip}
+                        renderInviteToolTip={renderInviteToolTip}
+                        showRoomToolTip={showRoomToolTip}
+                        handleRemoveFriend={handleRemoveFriend}
+                />
+                : null
+            }
             <Modal show={show} onHide={handleClose}>
                 <Modal.Header closeButton>
                     {
