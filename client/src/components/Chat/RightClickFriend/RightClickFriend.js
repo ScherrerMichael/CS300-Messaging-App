@@ -29,9 +29,6 @@ class RightClickFriend extends Component {
                 paddingRight: 40,
             }}
             onMouseLeave={handleMouseLeave}>
-            <ListGroup.Item action onClick={handleDirectMessage} className="list-item-rooms-context">
-                message
-        </ListGroup.Item>
             <div
                 onMouseOver={() => setShowRoomToolTip(true)}
                 onMouseOut={() => setShowRoomToolTip(false)}

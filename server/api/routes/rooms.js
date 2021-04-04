@@ -165,7 +165,7 @@ router.post('/:roomId/messages', async (req, res, next) => { //TODO Test This!!
                 message.user = doc;
 
                 Room.updateOne({_id: id}, {$push:{
-                    messages: message
+                    messages: message,
                 }})
                 .then(() => {
                     res.status(201).json({
@@ -268,12 +268,17 @@ router.patch('/:roomId', (req, res, next) => {
 })
 
 
-router.delete('/:roomId', (req, res, next) => {
+router.post('/:roomId/remove', (req, res, next) => { //TODO: dont know why delete request are not accepted..
+    //I changed this to post for that reason
     const id = req.params.roomId;
     Room.remove({_id: id})
     .exec()
     .then(result => {
-        res.status(200).json(result);
+        res.status(200).json({
+            message: 'removed room',
+            removed_id: id,
+            result: result,
+        });
     })
     .catch(err => {
         console.log(err)

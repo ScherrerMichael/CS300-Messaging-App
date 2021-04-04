@@ -26,6 +26,7 @@ const roomSchema = mongoose.Schema({
     ],
     messages: [Message.schema],
     owner: [{type: User.schema, default: {}}],
+    is_active: {type: Boolean, default: false},
     updated_at: {type: Date, default: Date.now},
 
 });

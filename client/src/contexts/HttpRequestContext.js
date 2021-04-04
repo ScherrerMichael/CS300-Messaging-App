@@ -153,6 +153,24 @@ const { currentUser, signup} = useAuth();
         })
     }
 
+    let deleteRoom = function(room_id)
+    {
+        return new Promise(function(resolve, reject){
+
+            const headers = {
+                'Content-Type': 'text/plain'
+            }
+
+            axios.post(`${process.env.REACT_APP_MONGO_DB_PORT}/rooms/${room_id}/remove`, {headers})
+            .then(res => {
+                resolve(res);
+            })
+            .catch(err => {
+                reject(err);
+            });
+        })
+    }
+
     const value = {
         postNewUser,
         postNewRoomFromUser,
@@ -161,6 +179,7 @@ const { currentUser, signup} = useAuth();
         postMessageToRoom,
         getUserFromId,
         deleteFriend,
+        deleteRoom,
         addFriend,
     }
 

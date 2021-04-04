@@ -68,6 +68,19 @@ io.on('connection', (socket)=> { //this is so cool
 
     })
 
+    socket.on('remove-room', (userId, removedId, callback) => {
+        console.log(`user ${userId} removed room: ${removedId}`);
+
+        socket.broadcast.emit('remove-room-response', userId, removedId);
+            callback({callback: {
+                status: 'ok',
+                server: 'removed room',
+                removed: removedId,
+            }})
+
+    })
+
+
     socket.on('disconnect', ()=> {
         console.log('User has left!');
     })

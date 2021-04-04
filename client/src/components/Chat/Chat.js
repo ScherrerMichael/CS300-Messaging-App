@@ -9,8 +9,6 @@ import { Link, useHistory } from 'react-router-dom';
 import style from './style.css'
 import 'bootstrap/dist/css/bootstrap.min.css'
 import {
-    Tab,
-    Tabs,
     ListGroup,
     Container,
     Row,
@@ -18,9 +16,6 @@ import {
     Button,
     Form,
     Modal,
-    Card,
-    ListGroupItem,
-    OverlayTrigger,
     Popover
 } from 'react-bootstrap'
 import ScrollToBottom from 'react-scroll-to-bottom';
@@ -39,6 +34,7 @@ const Chat = () => {
         getRoomMessages,
         postMessageToRoom,
         deleteFriend,
+        deleteRoom,
         addFriend,
     } = useRequest();
 
@@ -56,18 +52,16 @@ const Chat = () => {
     });
     const [messages, setMessages] = useState([]);
     const [room, setRoom] = useState({});
-    // const [roomName, setRoomName] = useState('');
-    const [currentRoomName, setCurrentRoomname] = useState('');
-    const [selectedRoom, setSelectedRoom] = useState('');
+
     const modalRef = useRef();
     const formRef = useRef();
     const messageRef = useRef();
-    // const [message, setMessage] = useState({});
     const [xPos, setXPos] = useState('0px');
     const [yPos, setYPos] = useState('0px');
     const [showFriendOptions, setShowFriendOptions] = useState(false);
     const [showRoomOptions, setShowRoomOptions] = useState(false);
-    const [currentFriend, setCurrentFriend] = useState('');
+    const [currentFriend, setCurrentFriend] = useState();
+    const [currentRoom, setCurrentRoom] = useState();
     const [showRoomToolTip, setShowRoomToolTip] = useState(false);
 
     const handleTabChange = (tab) => {
@@ -79,7 +73,6 @@ const Chat = () => {
             .then(data => {
                 if (data)
                     setRooms([...data.result]);
-                // console.log(...data.result)
             })
             .catch(err => {
                 console.log(err);
@@ -103,7 +96,6 @@ const Chat = () => {
         axios.get(`${process.env.REACT_APP_MONGO_DB_PORT}/users/${currentUser.uid}`)
             .then(res => {
                 if (mounted) {
-                    console.log(res.data)
                     setFriends({ friends: res.data.friends})
                 }
             })
@@ -147,24 +139,6 @@ const Chat = () => {
             })
     }
 
-    function handleDirectMessage() { //TODO: create room with topic name of messagee/messager
-        //if there is no room already with friend create one and join it, (room will have no owner)
-        //handleAddPrivateRoom()
-        //else join room
-        //TODO: do this axios once a message has actaully been sent! (create a false room from client then post room)
-            axios.post(`${process.env.REACT_APP_MONGO_DB_PORT}/rooms/${currentUser.uid}/private`, {
-                topic: 'direct message',
-                userId: currentFriend
-            })
-            .then(res => {
-                console.log(res)
-            })
-            .catch(err => {
-                console.log(err)
-            });
-        setShowFriendOptions(false);
-    }
-
     function handleSwitchRoom(roomId) {
         let r = rooms.find(a => a._id === roomId)
 
@@ -176,7 +150,7 @@ const Chat = () => {
                     setRoom(r);
                 })
                 .then(() => {
-                    setCurrentRoomname(r.topic);
+                    // setCurrentRoomname(r.topic);
                     socket.emit('join', currentUser.displayName, r._id, ({ message }) => {
                         console.log(message);
                     });
@@ -193,7 +167,7 @@ const Chat = () => {
             {
                 addFriend(modalRef.current.value)
                 .then(res => {
-                        socket.emit('add-friend', currentUser, currentFriend, ({callback}) => {
+                        socket.emit('add-friend', currentUser, currentFriend.uid, ({callback}) => {
                             // console.log(res.data.result.friends)
                             setFriends({friends: res.data.result.friends})
                         })
@@ -211,12 +185,33 @@ const Chat = () => {
     {
         e.preventDefault();
 
-        deleteFriend(currentFriend)
+        deleteFriend(currentFriend.uid)
         .then((res) => {
             console.log(res);
-            socket.emit('remove-friend', currentUser, currentFriend, ({callback}) => {
+            socket.emit('remove-friend', currentUser, currentFriend.uid, ({callback}) => {
                 setFriends(res.data.result.friends)
             })
+        })
+        .catch(err => {
+            console.log(err)
+        })
+    }
+
+    function handleRemoveRoom(e)
+    {
+        e.preventDefault();
+
+        const newList = rooms.filter((room) => room._id != currentRoom._id)
+        setShowRoomOptions(false);
+
+        deleteRoom(currentRoom._id)
+        .then((res) => {
+            socket.emit('remove-room', currentUser, currentRoom._id, ({callback}) => {
+
+                setRooms(newList)
+            })
+
+            setCurrentRoom();
         })
         .catch(err => {
             console.log(err)
@@ -239,7 +234,7 @@ const Chat = () => {
     function handleInviteToRoom(roomId) {
         if (room) {
             axios.post(`${process.env.REACT_APP_MONGO_DB_PORT}/rooms/${roomId}/add-user`, {
-                uid: currentFriend
+                uid: currentFriend.uid
             })
                 .then(res => {
                     console.log(res)
@@ -251,7 +246,7 @@ const Chat = () => {
         } else {
             console.log('You need to be in a room!');
         }
-        setCurrentFriend('');
+        setCurrentFriend();
     }
 
     //similar to componentdidmount
@@ -283,20 +278,20 @@ const Chat = () => {
 
     }, []);
 
-    function handleRightClickFriend(e, uid) {
+    function handleRightClickFriend(e, friend) {
         //TODO: if user is already in room, do not show 'invite to room on menu'
         e.preventDefault();
 
-        setCurrentFriend(uid);
+        setCurrentFriend(friend);
         setXPos(e.pageX);
         setYPos(e.pageY);
         setShowFriendOptions(true);
     }
 
-    function handleRightClickRoom(e, uid) {
+    function handleRightClickRoom(e, room) {
         e.preventDefault();
 
-        setSelectedRoom(uid);
+        setCurrentRoom(room);
         setXPos(e.pageX);
         setYPos(e.pageY);
         setShowRoomOptions(true);
@@ -304,6 +299,7 @@ const Chat = () => {
 
     function handleMouseLeave() {
         setShowFriendOptions(false);
+        setShowRoomOptions(false);
     }
 
     const renderInviteToolTip = (props) => (
@@ -385,7 +381,6 @@ const Chat = () => {
                         xPos={xPos}
                         yPos={yPos}
                         handleMouseLeave={handleMouseLeave}
-                        handleDirectMessage={handleDirectMessage}
                         setShowRoomToolTip={setShowRoomToolTip}
                         renderInviteToolTip={renderInviteToolTip}
                         showRoomToolTip={showRoomToolTip}
@@ -400,11 +395,10 @@ const Chat = () => {
                         xPos={xPos}
                         yPos={yPos}
                         handleMouseLeave={handleMouseLeave}
-                        handleDirectMessage={handleDirectMessage}
                         setShowRoomToolTip={setShowRoomToolTip}
                         renderInviteToolTip={renderInviteToolTip}
                         showRoomToolTip={showRoomToolTip}
-                        handleRemoveFriend={handleRemoveFriend}
+                        handleRemoveRoom={handleRemoveRoom}
                 />
                 : null
             }

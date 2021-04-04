@@ -11,11 +11,8 @@ class RightClickRoom extends Component {
             xPos,
             yPos,
             handleMouseLeave,
-            handleDirectMessage,
             setShowRoomToolTip,
-            renderInviteToolTip,
-            showRoomToolTip,
-            handleRemoveFriend,
+            handleRemoveRoom,
         } = this.props;
 
         return (
@@ -36,7 +33,7 @@ class RightClickRoom extends Component {
                         edit room
                 </ListGroup.Item>
                 </div>
-                <ListGroup.Item action className="list-item-rooms-context" onClick={handleRemoveFriend}>
+                <ListGroup.Item action className="list-item-rooms-context" onClick={handleRemoveRoom}>
                     delete room
         </ListGroup.Item>
             </ListGroup>
