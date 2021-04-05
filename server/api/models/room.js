@@ -6,6 +6,7 @@ const Message = require('./message');
 const roomSchema = mongoose.Schema({
     _id: mongoose.Schema.Types.ObjectId,
     topic: String,
+    description: String,
     users: [
         {
             user:{

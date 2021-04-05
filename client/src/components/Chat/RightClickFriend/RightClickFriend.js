@@ -10,8 +10,8 @@ class RightClickFriend extends Component {
       const {
         xPos,
         yPos,
+        rooms,
         handleMouseLeave,
-        handleDirectMessage,
         setShowRoomToolTip,
         renderInviteToolTip,
         showRoomToolTip,
@@ -30,7 +30,10 @@ class RightClickFriend extends Component {
             }}
             onMouseLeave={handleMouseLeave}>
             <div
-                onMouseOver={() => setShowRoomToolTip(true)}
+                onMouseOver={() => {
+                  if(rooms[0])
+                  setShowRoomToolTip(true)
+                }}
                 onMouseOut={() => setShowRoomToolTip(false)}
             >
                 <OverlayTrigger

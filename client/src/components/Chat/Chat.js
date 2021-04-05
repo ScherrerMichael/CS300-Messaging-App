@@ -91,7 +91,6 @@ const Chat = () => {
 
     useEffect(() => { // getting all rooms that the user is in
         let mounted = true;
-        console.log(friendsList)
         //update friends //this is ugly...
         axios.get(`${process.env.REACT_APP_MONGO_DB_PORT}/users/${currentUser.uid}`)
             .then(res => {
@@ -102,7 +101,6 @@ const Chat = () => {
             .catch(err => {
                 console.log(err);
             });
-
         return () => mounted = false;
 
     }, [tab])
@@ -297,6 +295,12 @@ const Chat = () => {
         setShowRoomOptions(true);
     }
 
+    function handleEditRoom(e){
+        e.preventDefault();
+
+        console.log('editing room')
+    }
+
     function handleMouseLeave() {
         setShowFriendOptions(false);
         setShowRoomOptions(false);
@@ -308,14 +312,14 @@ const Chat = () => {
             <Popover.Content>
                 <ListGroup className="">
                     {
-                        rooms ?
+                        rooms?
                             rooms.map(room =>
                                 <ListGroup.Item action
                                     className="list-item-rooms"
                                     onClick={() => handleInviteToRoom(room._id)}
                                     key={room._id + 'room-invite-choice'}>{room.topic}
                                 </ListGroup.Item>) :
-                            <div></div>
+                                null
                     }
                 </ListGroup>
             </Popover.Content>
@@ -380,6 +384,7 @@ const Chat = () => {
                     <RightClickFriend
                         xPos={xPos}
                         yPos={yPos}
+                        rooms={rooms}
                         handleMouseLeave={handleMouseLeave}
                         setShowRoomToolTip={setShowRoomToolTip}
                         renderInviteToolTip={renderInviteToolTip}
@@ -396,7 +401,7 @@ const Chat = () => {
                         yPos={yPos}
                         handleMouseLeave={handleMouseLeave}
                         setShowRoomToolTip={setShowRoomToolTip}
-                        renderInviteToolTip={renderInviteToolTip}
+                        handleEditRoom={handleEditRoom}
                         showRoomToolTip={showRoomToolTip}
                         handleRemoveRoom={handleRemoveRoom}
                 />

@@ -38,7 +38,6 @@ class LeftPanel extends Component {
                                                     friendsList.friends.map(friend =>
                                                         <ListGroup.Item action
                                                             className="list-item-rooms"
-                                                            // TODO: create a popup menu at location of cursor on right click
                                                             onContextMenu={(e) => handleRightClickFriend(e, friend)}
                                                             key={friend.uid + 'friends'}>
                                                             {/* TODO: add image of person here */}

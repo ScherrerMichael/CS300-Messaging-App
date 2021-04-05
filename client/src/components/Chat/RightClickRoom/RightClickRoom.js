@@ -10,6 +10,7 @@ class RightClickRoom extends Component {
         const {
             xPos,
             yPos,
+            handleEditRoom,
             handleMouseLeave,
             setShowRoomToolTip,
             handleRemoveRoom,
@@ -29,7 +30,7 @@ class RightClickRoom extends Component {
                     onMouseOver={() => setShowRoomToolTip(true)}
                     onMouseOut={() => setShowRoomToolTip(false)}
                 >
-                <ListGroup.Item action className="list-item-rooms-context">
+                <ListGroup.Item action className="list-item-rooms-context" onClick={(e) => handleEditRoom(e)}>
                         edit room
                 </ListGroup.Item>
                 </div>
