@@ -86,6 +86,34 @@ router.post('/', (req, res, next) => {
 
 });
 
+//GET a user with a name that exists
+router.get('/:name/', (req, res, next) => {
+    const name = req.params.name;
+
+    User.findOne({user_name: name})
+    .exec()
+    .then(doc => {
+
+        if(doc)
+        {
+            res.status(200).json({
+                result: 1
+            })
+        }
+        else
+        {
+            throw new Error('user name does not exists')
+        }
+    })
+    .catch(e => {
+
+            res.status(400).json({
+                error: e
+            })
+    })
+
+});
+
 //POST a new friend into an existing user
 router.post('/:userId/add-friend', (req, res, next) => {
 
@@ -228,8 +256,6 @@ router.post('/:userId/friends', (req, res, next) => {
 
     const id = req.params.userId;
     const friendId = req.body.friend_uid;
-
-    User.find
 
     User.findOneAndUpdate({uid: id}, {$pull: {'friends': {'uid': friendId}} })
     .exec()

@@ -1,34 +1,48 @@
-import React, { useContext, useEffect, useState} from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import axios from 'axios';
-import {auth} from '../firebase';
+import { auth } from '../firebase';
 
 const AuthContext = React.createContext();
 
-export function useAuth(){
+export function useAuth() {
     return useContext(AuthContext);
 }
 
-export function AuthProvider({children}) {
+export function AuthProvider({ children }) {
 
     const [currentUser, setCurrentUser] = useState();
     const [loading, setLoading] = useState(true);
 
-    async function signup(email, password, displayName){ //TODO: need to find way to update currentUser state
-            auth.createUserWithEmailAndPassword(email, password)
+    let IsUserNameAvailable = function(displayName) {
+
+        return new Promise(function(resolve, reject) {
+            axios.get(`${process.env.REACT_APP_MONGO_DB_PORT}/users/${displayName}`)
+            .then(res  =>{
+                console.log('user name is not available.')
+                reject()
+            })
+            .catch(res => {
+                resolve(displayName);
+            })
+        })
+    }
+
+    async function signup(email, password, displayName) {
+        auth.createUserWithEmailAndPassword(email, password)
             .then((result) => {
                 result.user.updateProfile({
                     displayName: displayName
                 })
-                .then(() =>{
-                    setCurrentUser({displayName: displayName})
-                })
-                .then(() =>{
-                    axios.post(`${process.env.REACT_APP_MONGO_DB_PORT}/users/`, {
-                        email: result.user.email,
-                        uid: result.user.uid,
-                        user_name: result.user.displayName
-                })
-                })
+                    .then(() => {
+                        setCurrentUser({ displayName: displayName })
+                    })
+                    .then(() => {
+                        axios.post(`${process.env.REACT_APP_MONGO_DB_PORT}/users/`, {
+                            email: result.user.email,
+                            uid: result.user.uid,
+                            user_name: result.user.displayName
+                        })
+                    })
             })
     }
 
@@ -44,11 +58,11 @@ export function AuthProvider({children}) {
         }
     }
 
-    async function logout(){
+    async function logout() {
         await auth.signOut();
     }
 
-    function resetPassword(email){
+    function resetPassword(email) {
         return auth.sendPasswordResetEmail(email);
     }
 
@@ -64,6 +78,7 @@ export function AuthProvider({children}) {
 
     const value = {
         currentUser,
+        IsUserNameAvailable,
         signup,
         login,
         logout,
@@ -71,7 +86,7 @@ export function AuthProvider({children}) {
     }
 
     return (
-        <AuthContext.Provider value ={value}>
+        <AuthContext.Provider value={value}>
             {!loading && children}
         </AuthContext.Provider>
 

@@ -12,7 +12,7 @@ const Signup = () => {
     const passwordRef = useRef();
     const passwordConfirmRef = useRef();
     const userNameRef = useRef();
-    const {currentUser, signup} = useAuth();
+    const {currentUser, signup, IsUserNameAvailable} = useAuth();
     const {postNewUser} = useRequest();
     const [error, setError] = useState("");
     const [loading, setLoading] = useState(false);
@@ -27,18 +27,22 @@ const Signup = () => {
             return setError('Passwords do not match');
         }
 
-        setError("");
-        try {
+            setError("");
             setLoading(true);
-            signup(emailRef.current.value, passwordRef.current.value, userNameRef.current.value)
-                .then(() => {
-                    setLoading(false)
-                    history.push("/");
-                })
-        } catch {
-            setError('error creating account')
+            IsUserNameAvailable(userNameRef.current.value)
+            .then(name => {
+                signup(emailRef.current.value, passwordRef.current.value, name)
+                    .then(() => {
+                        history.push("/");
+                    })
+            })
+            .catch(() => {
+                setError('error creating account')
+            })
+            .finally(() => {
+                setLoading(false)
+            })
         }
-    }
 
     useEffect(() =>{
 
