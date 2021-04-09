@@ -217,16 +217,18 @@ const Chat = () => {
     }
 
     function handleLogout() {
+
         setError('');
 
-        try {
-            logout();
-            socket.disconnect();
-            history.push('/login');
-        } catch {
-            setError('Failed to logout');
+            logout()
+            .then(() => {
+                socket.disconnect();
+                history.push('/login');
+            })
+            .catch(err => {
+                setError(err);
+            })
         }
-    }
 
 
     function handleInviteToRoom(roomId) {

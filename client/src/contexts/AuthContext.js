@@ -47,7 +47,9 @@ export function AuthProvider({ children }) {
     }
 
     useEffect(() => { //need this for forcing update on currentUser
+
         console.log('current user changed')
+
     }, [currentUser])
 
     async function login(email, password) {
@@ -58,8 +60,20 @@ export function AuthProvider({ children }) {
         }
     }
 
-    async function logout() {
-        await auth.signOut();
+    // async function logout() {
+    //     await auth.signOut();
+    // }
+
+    let logout = function(){
+        return new Promise(function(resolve, reject) {
+            auth.signOut()
+            .then(() => {
+                resolve('user signed out');
+            })
+            .catch(e => {
+                reject(e);
+            })
+        })
     }
 
     function resetPassword(email) {
@@ -72,7 +86,7 @@ export function AuthProvider({ children }) {
             setLoading(false);
         });
         return unsubscribe;
-    }, [])
+    }, [currentUser])
 
 
 
