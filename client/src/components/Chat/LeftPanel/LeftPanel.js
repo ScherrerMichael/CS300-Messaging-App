@@ -41,7 +41,23 @@ class LeftPanel extends Component {
                                                             onContextMenu={(e) => handleRightClickFriend(e, friend)}
                                                             key={friend.uid + 'friends'}>
                                                             {/* TODO: add image of person here */}
-                                                            {friend.user_name}
+                                                            {friend.user_name + ', status: ' + friend.status}
+                                                        </ListGroup.Item>)
+                                                    :
+                                                    <div></div>
+                                            }
+
+                                            <div className="friends-divider">hello</div>
+
+                                            {//friends with status 0
+                                                friendsList.friends ?
+                                                    friendsList.friends.map(friend =>
+                                                        <ListGroup.Item action
+                                                            className="list-item-rooms"
+                                                            onContextMenu={(e) => handleRightClickFriend(e, friend)}
+                                                            key={friend.uid + 'friends-pending'}>
+                                                            {/* TODO: add image of person here */}
+                                                            {friend.user_name + ', status: ' + friend.status}
                                                         </ListGroup.Item>)
                                                     :
                                                     <div></div>

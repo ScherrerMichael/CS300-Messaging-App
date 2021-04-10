@@ -95,6 +95,15 @@ const Chat = () => {
         axios.get(`${process.env.REACT_APP_MONGO_DB_PORT}/users/${currentUser.uid}`)
             .then(res => {
                 if (mounted) {
+                    //TODO: I can filter the http response data, so I jsut have to make a pending attribute to 
+                    // friendsList, called pending. the 'friends' coming in with status 0 are put into the pending list.
+
+                    let acceptedFriends = res.data.friends.filter(friend => friend.status === 1);
+                    let pendingFriends = res.data.friends.filter(friend => friend.status === 0);
+
+                    console.log('real friends', acceptedFriends)
+                    console.log('pending friends', pendingFriends)
+
                     setFriends({ friends: res.data.friends})
                 }
             })

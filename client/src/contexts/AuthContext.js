@@ -16,7 +16,7 @@ export function AuthProvider({ children }) {
     let IsUserNameAvailable = function(displayName) {
 
         return new Promise(function(resolve, reject) {
-            axios.get(`${process.env.REACT_APP_MONGO_DB_PORT}/users/${displayName}`)
+            axios.get(`${process.env.REACT_APP_MONGO_DB_PORT}/users/${displayName}/exists`)
             .then(res  =>{
                 console.log('user name is not available.')
                 reject()

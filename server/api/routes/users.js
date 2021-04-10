@@ -87,7 +87,7 @@ router.post('/', (req, res, next) => {
 });
 
 //GET a user with a name that exists
-router.get('/:name/', (req, res, next) => {
+router.get('/:name/exists', (req, res, next) => {
     const name = req.params.name;
 
     User.findOne({user_name: name})

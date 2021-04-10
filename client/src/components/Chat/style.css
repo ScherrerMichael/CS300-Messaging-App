@@ -102,7 +102,13 @@
     position: absolute;
     border: 0 !important;
     right: 0;
-    top: 100px;
+    top: 150px;
+}
+
+.friends-divider{
+    border-bottom: var(--tab-default-color) solid;
+    margin-top: 400px;
+    margin-bottom: 100px;
 }
 
 .list-item-rooms{
@@ -223,12 +229,6 @@
     margin-top: 50px;
     margin-left: 90%;
     margin-right: 10px;
-}
-
-.debug{
-    /* border-style: solid;
-    border-color: red;
-    border-width: 1px; */
 }
 
 .text-field-row{
