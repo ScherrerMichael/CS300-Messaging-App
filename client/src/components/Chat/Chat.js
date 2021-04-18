@@ -48,7 +48,8 @@ const Chat = () => {
     const [tab, setTab] = useState('');
     const [rooms, setRooms] = useState([]);
     const [friendsList, setFriends] = useState({
-        friends: []
+        accepted: [],
+        pending: []
     });
     const [messages, setMessages] = useState([]);
     const [room, setRoom] = useState({});
@@ -101,10 +102,13 @@ const Chat = () => {
                     let acceptedFriends = res.data.friends.filter(friend => friend.status === 1);
                     let pendingFriends = res.data.friends.filter(friend => friend.status === 0);
 
-                    console.log('real friends', acceptedFriends)
-                    console.log('pending friends', pendingFriends)
+                    // console.log('real friends', acceptedFriends)
+                    // console.log('pending friends', pendingFriends)
 
-                    setFriends({ friends: res.data.friends})
+                    setFriends({ 
+                        friends: acceptedFriends,
+                        pending: pendingFriends,
+                    })
                 }
             })
             .catch(err => {
@@ -297,6 +301,16 @@ const Chat = () => {
         setShowFriendOptions(true);
     }
 
+   function handleRemovePending(id)
+   {
+    console.log('removed from pending TODO', id)
+   }
+
+   function handleAcceptPending(id)
+   {
+    console.log('accepted from pending TODO', id)
+   }
+
     function handleRightClickRoom(e, room) {
         e.preventDefault();
 
@@ -348,6 +362,8 @@ const Chat = () => {
                     friendsList={friendsList}
                     handleRightClickFriend={handleRightClickFriend}
                     handleRightClickRoom={handleRightClickRoom}
+                    handleRemovePending={handleRemovePending}
+                    handleAcceptPending={handleAcceptPending}
                     rooms={rooms}
                     handleSwitchRoom={handleSwitchRoom}
                     handleShow={handleShow}

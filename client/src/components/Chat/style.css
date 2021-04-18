@@ -58,6 +58,15 @@
     width: 100% !important;
 }
 
+.tab-item-name{
+    padding-right: 20px;
+}
+
+.tab-item-button{
+    margin-right: 10px !important;
+    font-size: small !important;
+}
+
 .nav-link{
     width: 100%;
     background-color: var(--tab-default-color) !important;

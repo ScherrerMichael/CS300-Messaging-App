@@ -16,6 +16,8 @@ class LeftPanel extends Component {
         friendsList, 
         handleRightClickFriend, 
         handleRightClickRoom, 
+        handleRemovePending,
+        handleAcceptPending,
         rooms, 
         handleSwitchRoom, 
         handleShow,
@@ -47,17 +49,29 @@ class LeftPanel extends Component {
                                                     <div></div>
                                             }
 
-                                            <div className="friends-divider">hello</div>
+                                            <div className="friends-divider">Pending</div>
 
                                             {//friends with status 0
-                                                friendsList.friends ?
-                                                    friendsList.friends.map(friend =>
-                                                        <ListGroup.Item action
+                                                friendsList.pending ?
+                                                    friendsList.pending.map(friend =>
+                                                        <ListGroup.Item
                                                             className="list-item-rooms"
-                                                            onContextMenu={(e) => handleRightClickFriend(e, friend)}
                                                             key={friend.uid + 'friends-pending'}>
                                                             {/* TODO: add image of person here */}
-                                                            {friend.user_name + ', status: ' + friend.status}
+                                                            <div>
+                                                                <span className="tab-item-name">{friend.user_name}</span>
+                                                                <Button className="tab-item-button" 
+                                                                onClick={() => handleAcceptPending(friend.uid)}
+                                                                variant="success">
+                                                                    Accept
+                                                                </Button>
+
+                                                                <Button className="tab-item-button" 
+                                                                onClick={() => handleRemovePending(friend.uid)}
+                                                                variant="danger" >
+                                                                    Decline
+                                                                </Button>
+                                                            </div>
                                                         </ListGroup.Item>)
                                                     :
                                                     <div></div>
