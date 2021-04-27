@@ -33,14 +33,14 @@ const Signup = () => {
             .then(name => {
                 signup(emailRef.current.value, passwordRef.current.value, name)
                     .then(() => {
-                        history.push("/");
+                        return (history.push("/"));
                     })
             })
             .catch(() => {
-                setError('error creating account')
+                return(setError('error creating account'));
             })
             .finally(() => {
-                setLoading(false)
+                return (setLoading(false))
             })
         }
 

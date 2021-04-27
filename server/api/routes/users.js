@@ -106,7 +106,6 @@ router.get('/:name/exists', (req, res, next) => {
         }
     })
     .catch(e => {
-
             res.status(400).json({
                 error: e
             })
@@ -182,6 +181,69 @@ router.post('/:userId/add-friend', (req, res, next) => {
         res.status(500).json({error: err})
     });
     
+});
+
+
+//POST an acception request from a pending friend, updating both
+router.post('/accept-friend', (req, res, next) => {
+
+    //if user to add accepts, update both users to 'friends' code
+
+
+    const from = req.body.from_uid;
+    const to = req.body.to_uid;
+
+    //find current user
+    User.findOne({uid: from})
+    .exec()
+    .then(sender => {
+        if(sender){
+            User.findOne({uid: to})
+            .exec()
+            .then(reciever => {
+                if(reciever){
+
+                    let sf = sender.friends.find(f => f.uid === to)
+                    sf.status = 2;
+                    sender.save();
+
+                    let rf = reciever.friends.find(f => f.uid === from)
+                    rf.status = 2;
+                    reciever.save();
+
+                    res.status(201).json({
+                        message: 'user added',
+                        requestUid: from,
+                        recipientUid: reciever.uid,
+                        result_sender: sender,
+                        result_recipient: reciever,
+                    })
+
+
+                } else { //no reciepient found 
+                    res.status(404).json({
+                        message: 'No valid entry found for provided uid.'
+                    })
+                }
+            })
+            .catch(err => {
+                console.log(err);
+                res.status(500).json({
+                    message: 'could not find sender',
+                    error: err
+                })
+            });
+        } else { //user to send is not found.
+            res.status(404).json({
+                message: 'could not find reciever'
+            })
+        }
+    })
+    .catch(err => {
+        console.log(err);
+        res.status(500).json({error: err})
+    });
+
 });
 
 router.post('/:userId/rooms', (req, res, next) => {

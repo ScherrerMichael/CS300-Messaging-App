@@ -16,7 +16,7 @@ class LeftPanel extends Component {
         friendsList, 
         handleRightClickFriend, 
         handleRightClickRoom, 
-        handleRemovePending,
+        handleRemoveFriend,
         handleAcceptPending,
         rooms, 
         handleSwitchRoom, 
@@ -67,7 +67,7 @@ class LeftPanel extends Component {
                                                                 </Button>
 
                                                                 <Button className="tab-item-button" 
-                                                                onClick={() => handleRemovePending(friend.uid)}
+                                                                onClick={(e) => handleRemoveFriend(e, friend.uid)}
                                                                 variant="danger" >
                                                                     Decline
                                                                 </Button>

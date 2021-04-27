@@ -69,6 +69,31 @@ const Chat = () => {
         setTab(tab);
     }
 
+    function updateFriends()
+    {
+        axios.get(`${process.env.REACT_APP_MONGO_DB_PORT}/users/${currentUser.uid}`)
+            .then(res => {
+                    //TODO: I can filter the http response data, so I jsut have to make a pending attribute to 
+                    // friendsList, called pending. the 'friends' coming in with status 0 are put into the pending list.
+
+                    let acceptedFriends = res.data.friends.filter(friend => friend.status === 1);
+                    let pendingFriends = res.data.friends.filter(friend => friend.status === 0);
+
+                    // console.log('real friends', acceptedFriends)
+                    // console.log('pending friends', pendingFriends)
+
+                    setFriends({ 
+                        friends: acceptedFriends,
+                        pending: pendingFriends,
+                    })
+                }
+            )
+            .catch(err => {
+                console.log(err);
+            });
+    }
+    
+
     function updateAllRooms() {
         getRoomsWithUser
             .then(data => {
@@ -84,8 +109,8 @@ const Chat = () => {
         let mounted = true;
 
         if (mounted) {
+            updateAllRooms();
         }
-        updateAllRooms();
         return () => mounted = false;
 
     }, [show])
@@ -93,27 +118,10 @@ const Chat = () => {
     useEffect(() => { // getting all rooms that the user is in
         let mounted = true;
         //update friends //this is ugly...
-        axios.get(`${process.env.REACT_APP_MONGO_DB_PORT}/users/${currentUser.uid}`)
-            .then(res => {
-                if (mounted) {
-                    //TODO: I can filter the http response data, so I jsut have to make a pending attribute to 
-                    // friendsList, called pending. the 'friends' coming in with status 0 are put into the pending list.
+        if (mounted) {
+            updateFriends();
+        }
 
-                    let acceptedFriends = res.data.friends.filter(friend => friend.status === 1);
-                    let pendingFriends = res.data.friends.filter(friend => friend.status === 0);
-
-                    // console.log('real friends', acceptedFriends)
-                    // console.log('pending friends', pendingFriends)
-
-                    setFriends({ 
-                        friends: acceptedFriends,
-                        pending: pendingFriends,
-                    })
-                }
-            })
-            .catch(err => {
-                console.log(err);
-            });
         return () => mounted = false;
 
     }, [tab])
@@ -172,15 +180,22 @@ const Chat = () => {
     function handleAddUser(e) {
         e.preventDefault();
 
-            let friend = friendsList.friends.find(u => u.user_name === modalRef.current.value)
+        let friend;
+
+            try{
+                friend = friendsList.friends.find(u => u.user_name === modalRef.current.value)
+            } catch(err){
+                console.log(err.message);
+            }
 
             if(!friend)
             {
                 addFriend(modalRef.current.value)
                 .then(res => {
-                        socket.emit('add-friend', currentUser, currentFriend.uid, ({callback}) => {
+                    // console.log(res);
+                        socket.emit('add-friend', currentUser, res.data.recipientUid, ({callback}) => {
                             // console.log(res.data.result.friends)
-                            setFriends({friends: res.data.result.friends})
+                            updateFriends();
                         })
                 })
                 .catch(err => {
@@ -192,14 +207,14 @@ const Chat = () => {
             }
     }
 
-    function handleRemoveFriend(e)
+    function handleRemoveFriend(e, uid)
     {
         e.preventDefault();
 
-        deleteFriend(currentFriend.uid)
+        deleteFriend(uid)
         .then((res) => {
             console.log(res);
-            socket.emit('remove-friend', currentUser, currentFriend.uid, ({callback}) => {
+            socket.emit('remove-friend', currentUser, uid, ({callback}) => {
                 setFriends(res.data.result.friends)
             })
         })
@@ -362,7 +377,7 @@ const Chat = () => {
                     friendsList={friendsList}
                     handleRightClickFriend={handleRightClickFriend}
                     handleRightClickRoom={handleRightClickRoom}
-                    handleRemovePending={handleRemovePending}
+                    handleRemoveFriend={handleRemoveFriend}
                     handleAcceptPending={handleAcceptPending}
                     rooms={rooms}
                     handleSwitchRoom={handleSwitchRoom}
