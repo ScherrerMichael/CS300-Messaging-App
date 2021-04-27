@@ -80,6 +80,18 @@ io.on('connection', (socket)=> { //this is so cool
 
     })
 
+    socket.on('accept-request', (user, uid, callback) => {
+
+        socket.broadcast.emit('accepted-request', user.uid, uid);
+
+        callback({callback: {
+            status: 'ok',
+            server: 'accepted friend request',
+            user_01: user.uid,
+            user_02: uid
+        }})
+    })
+
 
     socket.on('disconnect', ()=> {
         console.log('User has left!');

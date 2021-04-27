@@ -189,7 +189,6 @@ router.post('/accept-friend', (req, res, next) => {
 
     //if user to add accepts, update both users to 'friends' code
 
-
     const from = req.body.from_uid;
     const to = req.body.to_uid;
 

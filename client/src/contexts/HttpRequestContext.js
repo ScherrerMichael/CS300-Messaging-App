@@ -34,6 +34,21 @@ const { currentUser, signup} = useAuth();
 
     }
 
+    let acceptRequest = function(to)
+    {
+        return new Promise(function(resolve, reject){
+            axios.post(`${process.env.REACT_APP_MONGO_DB_PORT}/users/accept-friend`, {
+                from_uid: currentUser.uid,
+                to_uid: to,
+            })
+            .then(res => {
+                resolve(res.data)
+            }).catch(err => {
+                console.log(err)
+            })
+        })
+    }
+
     let getUserFromId = function(userId){
         return new Promise(function(resolve, reject){
 
@@ -173,6 +188,7 @@ const { currentUser, signup} = useAuth();
 
     const value = {
         postNewUser,
+        acceptRequest,
         postNewRoomFromUser,
         getRoomsWithUser,
         getRoomMessages,

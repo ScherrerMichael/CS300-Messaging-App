@@ -12,6 +12,7 @@ class RightClickFriend extends Component {
         yPos,
         rooms,
         handleMouseLeave,
+        handleInviteToRoom,
         setShowRoomToolTip,
         renderInviteToolTip,
         showRoomToolTip,
@@ -42,7 +43,7 @@ class RightClickFriend extends Component {
                     overlay={renderInviteToolTip}
                     show={showRoomToolTip}
                 >
-                    <ListGroup.Item className="list-item-rooms-context">
+                    <ListGroup.Item action className="list-item-rooms-context" onClick={handleInviteToRoom}>
                         add to room
                 </ListGroup.Item>
                 </OverlayTrigger>

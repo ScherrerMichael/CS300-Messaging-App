@@ -60,11 +60,16 @@ class LeftPanel extends Component {
                                                             {/* TODO: add image of person here */}
                                                             <div>
                                                                 <span className="tab-item-name">{friend.user_name}</span>
-                                                                <Button className="tab-item-button" 
-                                                                onClick={() => handleAcceptPending(friend.uid)}
-                                                                variant="success">
-                                                                    Accept
-                                                                </Button>
+                                                                {
+                                                                    friend.status === 1?
+
+                                                                    <Button className="tab-item-button" 
+                                                                    onClick={() => handleAcceptPending(friend.uid)}
+                                                                    variant="success">
+                                                                        Accept
+                                                                    </Button> :
+                                                                    null
+                                                                }
 
                                                                 <Button className="tab-item-button" 
                                                                 onClick={(e) => handleRemoveFriend(e, friend.uid)}

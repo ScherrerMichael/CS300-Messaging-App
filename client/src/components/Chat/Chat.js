@@ -30,6 +30,7 @@ const Chat = () => {
     const { currentUser, logout } = useAuth();
     const { 
         postNewRoomFromUser,
+        acceptRequest,
         getRoomsWithUser,
         getRoomMessages,
         postMessageToRoom,
@@ -76,8 +77,8 @@ const Chat = () => {
                     //TODO: I can filter the http response data, so I jsut have to make a pending attribute to 
                     // friendsList, called pending. the 'friends' coming in with status 0 are put into the pending list.
 
-                    let acceptedFriends = res.data.friends.filter(friend => friend.status === 1);
-                    let pendingFriends = res.data.friends.filter(friend => friend.status === 0);
+                    let acceptedFriends = res.data.friends.filter(friend => friend.status === 2);
+                    let pendingFriends = res.data.friends.filter(friend => friend.status !== 2);
 
                     // console.log('real friends', acceptedFriends)
                     // console.log('pending friends', pendingFriends)
@@ -160,7 +161,6 @@ const Chat = () => {
 
     function handleSwitchRoom(roomId) {
         let r = rooms.find(a => a._id === roomId)
-
         if (r !== null) {
             getRoomMessages(roomId)
                 .then(messages => {
@@ -175,6 +175,7 @@ const Chat = () => {
                     });
                 })
         }
+        // console.log(room.owner[0].user_name)
     }
 
     function handleAddUser(e) {
@@ -323,7 +324,13 @@ const Chat = () => {
 
    function handleAcceptPending(id)
    {
-    console.log('accepted from pending TODO', id)
+       console.log(id);
+       acceptRequest(id)
+       .then(res => {
+            socket.emit('accept-request', currentUser, id, ({callback}) => {
+                updateFriends();
+            })
+       })
    }
 
     function handleRightClickRoom(e, room) {
@@ -407,6 +414,17 @@ const Chat = () => {
                     <Row className="member-details">
                         <ListGroup className="w-100 list-members">
                             Members
+
+                            {   
+                                room.owner[0]?
+                                <ListGroup.Item action
+                                    className="list-item-rooms"
+                                    key={'owner' + `member-list`}>
+                                    {room.owner[0].user_name}
+                                </ListGroup.Item>:
+                                null
+                            }
+
                             {
                                 room.users ?
                                     room.users.map((u, index) =>
@@ -429,6 +447,7 @@ const Chat = () => {
                         rooms={rooms}
                         handleMouseLeave={handleMouseLeave}
                         setShowRoomToolTip={setShowRoomToolTip}
+                        handleInviteToRoom={handleInviteToRoom}
                         renderInviteToolTip={renderInviteToolTip}
                         showRoomToolTip={showRoomToolTip}
                         handleRemoveFriend={handleRemoveFriend}
