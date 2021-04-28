@@ -130,31 +130,58 @@ router.post('/:userId/add-friend', (req, res, next) => {
             .exec()
             .then(reciever => {
                 if(reciever){
-                    //found user to add.
-                    //add bothe user into each others friends
-                    //update the added user with 'requested' code, 
-                    //update current user with 'pending' code
 
-                    sender.friends.push({
-                        user_name: reciever.user_name,
-                        uid: reciever.uid,
-                        status: 0
-                        });
-                    sender.save()
+                    User.bulkWrite([
+                        {
+                            updateOne:{
+                                filter:{uid: from, 'friends.uid':{$ne: reciever.uid}},
+                                update:{
+                                    $push:{
+                                        friends: {
+                                            user_name: reciever.user_name,
+                                            uid: reciever.uid,
+                                            status: 0
+                                        }
+                                    }
+                                }
+                            }
+                        },
 
-                    reciever.friends.push({
-                        user_name: sender.user_name,
-                        uid: sender.uid,
-                        status: 1
-                    });
-                    reciever.save();
-
-                    res.status(201).json({
-                        message: 'user added',
-                        requestUid: from,
-                        recipientUid: reciever.uid,
-                        result: sender,
+                        {
+                            updateOne:{
+                                filter:{user_name: to, 'friends.uid':{$ne: sender.uid}},
+                                update:{
+                                    $push:{
+                                        friends: {
+                                            user_name: sender.user_name,
+                                            uid: sender.uid,
+                                            status: 1
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    ], function(err, result) {
+                        if(err){
+                            res.send(err)
+                        } else {
+                            res.send(result)
+                        }
                     })
+
+                    // reciever.friends.push({
+                    //     user_name: sender.user_name,
+                    //     uid: sender.uid,
+                    //     status: 1
+                    // });
+                    // reciever.save();
+
+                    // res.status(201).json({
+                    //     message: 'user added',
+                    //     requestUid: from,
+                    //     recipientUid: reciever.uid,
+                    //     result: sender,
+                    // })
 
 
                 } else { //no reciepient found 

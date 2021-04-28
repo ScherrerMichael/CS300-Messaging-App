@@ -414,9 +414,8 @@ const Chat = () => {
                     <Row className="member-details">
                         <ListGroup className="w-100 list-members">
                             Members
-
                             {   
-                                room.owner[0]?
+                                room.owner && room.owner[0]?
                                 <ListGroup.Item action
                                     className="list-item-rooms"
                                     key={'owner' + `member-list`}>

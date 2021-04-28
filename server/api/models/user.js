@@ -9,7 +9,7 @@ const userSchema = mongoose.Schema({
     friends: [{
         status: Number,
         user_name: String,
-        uid: String
+        uid: String,
     }],
     is_active: {type: Boolean, default: false}
 });

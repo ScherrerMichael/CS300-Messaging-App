@@ -198,7 +198,7 @@ router.post('/:roomId/add-user', async (req, res, next) => {
         .then(user => {
             if(user){
 
-                Room.updateOne({_id: id}, {$push:{
+                Room.updateOne({_id: id}, {$addToSet:{
                     users: user,
                     user_name: user.user_name,
                     uid: user.uid,
