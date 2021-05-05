@@ -50,7 +50,8 @@ const Chat = () => {
     const [rooms, setRooms] = useState([]);
     const [friendsList, setFriends] = useState({
         accepted: [],
-        pending: []
+        sent: [],
+        received: [],
     });
     const [messages, setMessages] = useState([]);
     const [room, setRoom] = useState({});
@@ -77,15 +78,21 @@ const Chat = () => {
                     //TODO: I can filter the http response data, so I jsut have to make a pending attribute to 
                     // friendsList, called pending. the 'friends' coming in with status 0 are put into the pending list.
 
-                    let acceptedFriends = res.data.friends.filter(friend => friend.status === 2);
-                    let pendingFriends = res.data.friends.filter(friend => friend.status !== 2);
+                    // status
+                    // 0 - sent request to
+                    // 1 - recieved a request
+                    // 2 - friends
 
-                    // console.log('real friends', acceptedFriends)
-                    // console.log('pending friends', pendingFriends)
+                    let acceptedFriends = res.data.friends.filter(friend => friend.status === 2);
+                    let sentRequest = res.data.friends.filter(friend => friend.status === 0);
+                    let recievedRequest = res.data.friends.filter(friend => friend.status === 1);
+
+                    console.log('friends', friendsList);
 
                     setFriends({ 
                         friends: acceptedFriends,
-                        pending: pendingFriends,
+                        sent: sentRequest,
+                        received: recievedRequest
                     })
                 }
             )

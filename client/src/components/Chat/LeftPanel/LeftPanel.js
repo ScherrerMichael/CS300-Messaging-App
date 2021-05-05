@@ -48,28 +48,46 @@ class LeftPanel extends Component {
                                                     :
                                                     <div></div>
                                             }
+                                            </ListGroup>
 
+                                            <ListGroup className="w-100 list-group-menu">
                                             <div className="friends-divider">Pending</div>
 
-                                            {//friends with status 0
-                                                friendsList.pending ?
-                                                    friendsList.pending.map(friend =>
+                                            {// freind request that have been received
+                                                friendsList.received ?
+                                                    friendsList.received.map(friend =>
                                                         <ListGroup.Item
                                                             className="list-item-rooms"
                                                             key={friend.uid + 'friends-pending'}>
                                                             {/* TODO: add image of person here */}
                                                             <div>
                                                                 <span className="tab-item-name">{friend.user_name}</span>
-                                                                {
-                                                                    friend.status === 1?
-
                                                                     <Button className="tab-item-button" 
                                                                     onClick={() => handleAcceptPending(friend.uid)}
                                                                     variant="success">
                                                                         Accept
-                                                                    </Button> :
-                                                                    null
-                                                                }
+                                                                    </Button>
+
+                                                                <Button className="tab-item-button" 
+                                                                onClick={(e) => handleRemoveFriend(e, friend.uid)}
+                                                                variant="danger" >
+                                                                    Decline
+                                                                </Button>
+                                                            </div>
+                                                        </ListGroup.Item>)
+                                                    :
+                                                    <div></div>
+                                            }
+
+                                            {// freind request that have been sent
+                                                friendsList.sent ?
+                                                    friendsList.sent.map(friend =>
+                                                        <ListGroup.Item
+                                                            className="list-item-rooms"
+                                                            key={friend.uid + 'friends-pending'}>
+                                                            {/* TODO: add image of person here */}
+                                                            <div>
+                                                                <span className="tab-item-name">{friend.user_name}</span>
 
                                                                 <Button className="tab-item-button" 
                                                                 onClick={(e) => handleRemoveFriend(e, friend.uid)}

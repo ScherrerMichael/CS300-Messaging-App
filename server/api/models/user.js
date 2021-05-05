@@ -7,6 +7,10 @@ const userSchema = mongoose.Schema({
     avatar: String,
     email: String,
     friends: [{
+        // status
+        // 0 - sent request to
+        // 1 - recieved a request
+        // 2 - friends
         status: Number,
         user_name: String,
         uid: String,
