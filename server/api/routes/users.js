@@ -130,6 +130,8 @@ router.post('/:userId/add-friend', (req, res, next) => {
             .exec()
             .then(reciever => {
                 if(reciever){
+                    if(sender.user_name !== reciever.user_name)
+                    {
 
                     User.bulkWrite([
                         {
@@ -168,21 +170,7 @@ router.post('/:userId/add-friend', (req, res, next) => {
                             res.send(result)
                         }
                     })
-
-                    // reciever.friends.push({
-                    //     user_name: sender.user_name,
-                    //     uid: sender.uid,
-                    //     status: 1
-                    // });
-                    // reciever.save();
-
-                    // res.status(201).json({
-                    //     message: 'user added',
-                    //     requestUid: from,
-                    //     recipientUid: reciever.uid,
-                    //     result: sender,
-                    // })
-
+                }
 
                 } else { //no reciepient found 
                     res.status(404).json({

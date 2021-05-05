@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import { PlusSquare, PersonLinesFill, HouseFill, ChatLeftTextFill } from 'react-bootstrap-icons';
+import { PlusSquare, PersonLinesFill, HouseFill, ChatLeftTextFill, Check, X} from 'react-bootstrap-icons';
 import {
     Tab,
     Tabs,
@@ -10,21 +10,21 @@ import {
 } from 'react-bootstrap'
 
 class LeftPanel extends Component {
-  render() {
-      const {
-        handleTabChange, 
-        friendsList, 
-        handleRightClickFriend, 
-        handleRightClickRoom, 
-        handleRemoveFriend,
-        handleAcceptPending,
-        rooms, 
-        handleSwitchRoom, 
-        handleShow,
-        tab,
-    } = this.props
-    return (
-      <>
+    render() {
+        const {
+            handleTabChange,
+            friendsList,
+            handleRightClickFriend,
+            handleRightClickRoom,
+            handleRemoveFriend,
+            handleAcceptPending,
+            rooms,
+            handleSwitchRoom,
+            handleShow,
+            tab,
+        } = this.props
+        return (
+            <>
                 <Col xs="3" className="contacts debug">
                     <Row className="tab-row">
                         <Tabs onSelect={handleTabChange} className="tab-container">
@@ -48,9 +48,9 @@ class LeftPanel extends Component {
                                                     :
                                                     <div></div>
                                             }
-                                            </ListGroup>
+                                        </ListGroup>
 
-                                            <ListGroup className="w-100 list-group-menu">
+                                        <ListGroup className="w-100 list-group-menu">
                                             <div className="friends-divider">Pending</div>
 
                                             {// freind request that have been received
@@ -61,18 +61,23 @@ class LeftPanel extends Component {
                                                             key={friend.uid + 'friends-pending'}>
                                                             {/* TODO: add image of person here */}
                                                             <div>
-                                                                <span className="tab-item-name">{friend.user_name}</span>
-                                                                    <Button className="tab-item-button" 
-                                                                    onClick={() => handleAcceptPending(friend.uid)}
-                                                                    variant="success">
-                                                                        Accept
-                                                                    </Button>
+                                                                <Row>
 
-                                                                <Button className="tab-item-button" 
-                                                                onClick={(e) => handleRemoveFriend(e, friend.uid)}
-                                                                variant="danger" >
-                                                                    Decline
-                                                                </Button>
+                                                                <span className="tab-item-name">{friend.user_name}</span>
+                                                                <div className="tab-item-buttons">
+                                                                    <Button className="tab-item-button"
+                                                                        onClick={() => handleAcceptPending(friend.uid)}
+                                                                        variant="success">
+                                                                        <Check></Check>
+                                                                        </Button>
+
+                                                                    <Button className="tab-item-button"
+                                                                        onClick={(e) => handleRemoveFriend(e, friend.uid)}
+                                                                        variant="danger" >
+                                                                            <X></X>
+                                                                    </Button>
+                                                                </div>
+                                                                </Row>
                                                             </div>
                                                         </ListGroup.Item>)
                                                     :
@@ -87,13 +92,16 @@ class LeftPanel extends Component {
                                                             key={friend.uid + 'friends-pending'}>
                                                             {/* TODO: add image of person here */}
                                                             <div>
+                                                                <Row>
                                                                 <span className="tab-item-name">{friend.user_name}</span>
-
-                                                                <Button className="tab-item-button" 
-                                                                onClick={(e) => handleRemoveFriend(e, friend.uid)}
-                                                                variant="danger" >
-                                                                    Decline
-                                                                </Button>
+                                                                <div className="tab-item-buttons">
+                                                                    <Button className="tab-item-button"
+                                                                        onClick={(e) => handleRemoveFriend(e, friend.uid)}
+                                                                        variant="danger" >
+                                                                        <X></X>
+                                                                    </Button>
+                                                                </div>
+                                                                </Row>
                                                             </div>
                                                         </ListGroup.Item>)
                                                     :
@@ -138,9 +146,9 @@ class LeftPanel extends Component {
                         </Col>
                     </Row>
                 </Col>
-      </>
-    )
-  }
+            </>
+        )
+    }
 }
 
 export default LeftPanel
