@@ -1,6 +1,9 @@
 import React, { Component } from 'react'
-import { PlusSquare, PersonLinesFill, HouseFill, ChatLeftTextFill, Check, X} from 'react-bootstrap-icons';
+import { PlusSquare, PersonLinesFill, HouseFill, ChatLeftTextFill, Check, X } from 'react-bootstrap-icons';
+import FriendsListGroup from './FriendsListGroup/FriendsListGroup'
+import PendingListGroup from './PendingListGroup/PendingListGroup'
 import {
+    Container,
     Tab,
     Tabs,
     ListGroup,
@@ -27,89 +30,28 @@ class LeftPanel extends Component {
             <>
                 <Col xs="3" className="contacts debug">
                     <Row className="tab-row">
-                        <Tabs onSelect={handleTabChange} className="tab-container">
+                        <Tabs defaultActiveKey={'home'} onSelect={handleTabChange} className="tab-container">
                             <Tab eventKey={'home'} title={<span><HouseFill className="tab-icon" /> home</span>} className="filled-tab">
                                 {/* home stuff */}
                             </Tab>
                             <Tab eventKey={'people'} title={<span><PersonLinesFill className="tab-icon" /> people</span>} className="filled-tab">
-                                <Row className="menu">
-                                    <Tab.Container>
-                                        <ListGroup className="w-100 list-group-menu">
-                                            {
-                                                friendsList.friends ?
-                                                    friendsList.friends.map(friend =>
-                                                        <ListGroup.Item action
-                                                            className="list-item-rooms"
-                                                            onContextMenu={(e) => handleRightClickFriend(e, friend)}
-                                                            key={friend.uid + 'friends'}>
-                                                            {/* TODO: add image of person here */}
-                                                            {friend.user_name + ', status: ' + friend.status}
-                                                        </ListGroup.Item>)
-                                                    :
-                                                    <div></div>
-                                            }
-                                        </ListGroup>
+                                <Container>
+                                    <Row>
 
-                                        <ListGroup className="w-100 list-group-menu">
-                                            <div className="friends-divider">Pending</div>
+                                    <FriendsListGroup
+                                        friendsList = {friendsList}
+                                        handleRightClickFriend={handleRightClickFriend}
+                                    ></FriendsListGroup>
 
-                                            {// freind request that have been received
-                                                friendsList.received ?
-                                                    friendsList.received.map(friend =>
-                                                        <ListGroup.Item
-                                                            className="list-item-rooms"
-                                                            key={friend.uid + 'friends-pending'}>
-                                                            {/* TODO: add image of person here */}
-                                                            <div>
-                                                                <Row>
+                                    </Row>
 
-                                                                <span className="tab-item-name">{friend.user_name}</span>
-                                                                <div className="tab-item-buttons">
-                                                                    <Button className="tab-item-button"
-                                                                        onClick={() => handleAcceptPending(friend.uid)}
-                                                                        variant="success">
-                                                                        <Check></Check>
-                                                                        </Button>
-
-                                                                    <Button className="tab-item-button"
-                                                                        onClick={(e) => handleRemoveFriend(e, friend.uid)}
-                                                                        variant="danger" >
-                                                                            <X></X>
-                                                                    </Button>
-                                                                </div>
-                                                                </Row>
-                                                            </div>
-                                                        </ListGroup.Item>)
-                                                    :
-                                                    <div></div>
-                                            }
-
-                                            {// freind request that have been sent
-                                                friendsList.sent ?
-                                                    friendsList.sent.map(friend =>
-                                                        <ListGroup.Item
-                                                            className="list-item-rooms"
-                                                            key={friend.uid + 'friends-pending'}>
-                                                            {/* TODO: add image of person here */}
-                                                            <div>
-                                                                <Row>
-                                                                <span className="tab-item-name">{friend.user_name}</span>
-                                                                <div className="tab-item-buttons">
-                                                                    <Button className="tab-item-button"
-                                                                        onClick={(e) => handleRemoveFriend(e, friend.uid)}
-                                                                        variant="danger" >
-                                                                        <X></X>
-                                                                    </Button>
-                                                                </div>
-                                                                </Row>
-                                                            </div>
-                                                        </ListGroup.Item>)
-                                                    :
-                                                    <div></div>
-                                            }
-                                        </ListGroup>
-                                    </Tab.Container>
-                                </Row>
+                                    <Row>
+                                        <PendingListGroup
+                                            friendsList = {friendsList}
+                                            handleRightClickFriend = {handleRightClickFriend}
+                                        ></PendingListGroup>
+                                    </Row>
+                                </Container>
                             </Tab>
                             <Tab eventKey={'rooms'} title={<span><ChatLeftTextFill className="tab-icon" /> rooms</span>} className="filled-tab">
                                 <Row className="menu">
@@ -134,7 +76,7 @@ class LeftPanel extends Component {
                     </Row>
 
 
-                    <Row className="add-item">
+                    {/* <Row className="add-item">
                         <Col className="add-item">
                             {
                                 (tab === 'rooms' || tab === 'people') ?
@@ -144,7 +86,7 @@ class LeftPanel extends Component {
                                     <div></div>
                             }
                         </Col>
-                    </Row>
+                    </Row> */}
                 </Col>
             </>
         )

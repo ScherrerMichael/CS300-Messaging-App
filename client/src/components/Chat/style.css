@@ -41,20 +41,18 @@
 }
 
 .contacts{
-    /* margin-top: 50px; */
-    /* margin-right: 30px;
-    margin-left: 25px; */
+    margin-right: 10px;
     overflow: hidden;
-    padding-right: 0;
-    padding: 0 !important;
     background-color: var(--side-color);
+    display: block;
 }
 
-.tab-container
-{
-    display: flex !important;
+.tab-content{
+    width: 100% !important;
+}
+
+.nav{
     flex-wrap: nowrap !important;
-    align-items: stretch !important;
     width: 100% !important;
 }
 
@@ -115,16 +113,15 @@
 
 .list-group-menu{
     padding-right: 0px;
-    position: absolute;
     border: 0 !important;
-    right: 0;
     top: 150px;
 }
 
 .friends-divider{
+    position: absolute;
+    bottom: 0;
     border-bottom: var(--tab-default-color) solid;
-    margin-top: 400px;
-    margin-bottom: 100px;
+    margin-top: 80%;
 }
 
 .list-item-rooms{
@@ -171,8 +168,8 @@
 
 .chat{
     margin-top: 10px;
-    overflow: hidden;
     padding-right: 0;
+    min-width: 60%;
 }
 
 
@@ -196,15 +193,29 @@
 }
 
 .messages{
-    height: 86%;
-    margin-top: 25px;
-    /* border-radius: 20px 20px 0 0 ; */
+    position: absolute;
+    bottom: 0px;
 }
 
 .row{
     flex-wrap: nowrap !important;
 }
 
+.tab-row{
+    flex-wrap: wrap !important;
+}
+
+.send-message{
+    margin-bottom: 0px !important;
+}
+
+.send-message-button{
+    border-radius: 0 !important;
+    text-align: center !important;
+    padding-left: 0px !important;
+    padding-right: 0px !important;
+    width: 100% !important;
+}
 
 .text-box{
     width: 100%;
@@ -248,7 +259,10 @@
 }
 
 .text-field-row{
-    overflow: hidden;
+    position: absolute;
+    bottom: 5px;
+    width: 100%;
+    margin-right: 20px;
 }
 
 .line{
@@ -257,6 +271,7 @@
 
 .members{
     /* margin-top: 50px; */
+    margin-left: 10px;
     background-color: var(--side-color);
 }
 

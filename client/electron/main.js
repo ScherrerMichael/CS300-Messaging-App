@@ -13,7 +13,6 @@ function createWindow () {
   })
 
   const startURL = isDev? `http:///localhost:3000` : `${path.join(__dirname, '..\\build\\index.html')}`;
-  console.log(startURL);
 
   win.loadURL(startURL)
 }

@@ -1,4 +1,5 @@
 import React, { Component } from 'react'
+import { ArrowRightCircle} from 'react-bootstrap-icons';
 import {
     ListGroup,
     Row,
@@ -48,12 +49,14 @@ class MiddlePanel extends Component {
                         <Form ref={formRef} onSubmit={handleSubmit} className="text-box">
                             <Form.Row>
                                 <Col className="form-text-field">
-                                    <Form.Group id="Message">
+                                    <Form.Group id="Message" className="send-message">
                                         <Form.Control className="w-100 message-field" type="text" ref={messageRef} />
                                     </Form.Group>
                                 </Col>
-                                <Col xs='1' className="form-button-submit">
-                                    <Button className="w-100" type="submit">Send</Button>
+                                <Col xs='1' className="form-button-submit w-100">
+                                    <Button className="w-100 send-message-button" type="submit">
+                                        <ArrowRightCircle></ArrowRightCircle>
+                                    </Button>
                                 </Col>
                             </Form.Row>
                         </Form>
