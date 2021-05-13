@@ -222,7 +222,7 @@ const Chat = () => {
         .then((res) => {
             console.log(res);
             socket.emit('remove-friend', currentUser, uid, ({callback}) => {
-                setFriends(res.data.result.friends)
+                updateFriends();
             })
         })
         .catch(err => {

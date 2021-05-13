@@ -337,18 +337,18 @@ router.post('/:userId/friends', (req, res, next) => {
     const id = req.params.userId;
     const friendId = req.body.friend_uid;
 
-    User.findOneAndUpdate({uid: id}, {$pull: {'friends': {'uid': friendId}} })
+    User.findOneAndUpdate({uid: id},{$pull: {'friends': {'uid': friendId}} })
     .exec()
-    .then(() => { // remove the user from the other list
+    .then(user => { // remove the user from the other list
         User.findOneAndUpdate({uid: friendId}, {$pull: {'friends': {'uid': id}} })
         .exec()
         .then(result => {
-            console.log(result)
+            console.log(user)
             res.status(200).json({
                 message: 'friends list updated',
                 user: id,
                 removed: friendId,
-                result: result,
+                result: user,
             })
         })
     })
