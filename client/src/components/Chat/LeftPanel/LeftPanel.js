@@ -49,6 +49,7 @@ class LeftPanel extends Component {
                                         <PendingListGroup
                                             friendsList = {friendsList}
                                             handleRightClickFriend = {handleRightClickFriend}
+                                            handleAcceptPending = {handleAcceptPending}
                                         ></PendingListGroup>
                                     </Row>
                                 </Container>
@@ -76,7 +77,7 @@ class LeftPanel extends Component {
                     </Row>
 
 
-                    {/* <Row className="add-item">
+                    <Row className="add-item">
                         <Col className="add-item">
                             {
                                 (tab === 'rooms' || tab === 'people') ?
@@ -86,7 +87,7 @@ class LeftPanel extends Component {
                                     <div></div>
                             }
                         </Col>
-                    </Row> */}
+                    </Row>
                 </Col>
             </>
         )

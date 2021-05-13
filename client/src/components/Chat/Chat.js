@@ -269,6 +269,7 @@ const Chat = () => {
 
     function handleInviteToRoom(roomId) {
         if (room) {
+            console.log(currentFriend);
             axios.post(`${process.env.REACT_APP_MONGO_DB_PORT}/rooms/${roomId}/add-user`, {
                 uid: currentFriend.uid
             })

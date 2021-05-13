@@ -193,8 +193,10 @@
 }
 
 .messages{
+    width: 100%;
     position: absolute;
-    bottom: 0px;
+    top: 100px;
+    bottom: 40px;
 }
 
 .row{

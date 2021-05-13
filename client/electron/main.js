@@ -7,10 +7,15 @@ function createWindow () {
   const win = new BrowserWindow({
     width: 800,
     height: 600,
+    backgroundColor: '#3c3cd',
+    minHeight: 450,
+    minWidth:  900,
     // webPreferences: {
     //   preload: path.join(__dirname, 'preload.js')
     // }
   })
+
+  //win.setMenuBarVisibility(false)
 
   const startURL = isDev? `http:///localhost:3000` : `${path.join(__dirname, '..\\build\\index.html')}`;
 
