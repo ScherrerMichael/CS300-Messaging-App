@@ -113,7 +113,7 @@ router.get('/:name/exists', (req, res, next) => {
 
 });
 
-//POST a new friend into an existing user
+//POST a new friend into an existing user (not confirmed)
 router.post('/:userId/add-friend', (req, res, next) => {
 
     //if user to add accepts, update both users to 'friends' code
@@ -167,7 +167,11 @@ router.post('/:userId/add-friend', (req, res, next) => {
                         if(err){
                             res.send(err)
                         } else {
-                            res.send(result)
+                            res.status(201).json({
+                                message: 'friend request sent',
+                                senderUid : sender.uid,
+                                recipientUid : reciever.uid,
+                            })
                         }
                     })
                 }

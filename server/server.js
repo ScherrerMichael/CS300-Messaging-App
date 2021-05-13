@@ -45,13 +45,15 @@ io.on('connection', (socket)=> { //this is so cool
         }})
     });
 
-    socket.on('add-friend', (sender, reciepient, callback) => {
-        console.log(`user ${sender.displayName} has send a freind request to: ${reciepient}`)
+    socket.on('add-friend', (senderUid, reciepientUid, callback) => {
+        console.log(`user ${senderUid} has send a freind request to: ${reciepientUid}`)
+
+        socket.broadcast.emit('add-friend-response', reciepientUid)
 
         callback({callback: {
             status: 'ok',
-            sender: sender.uid,
-            reciepient: reciepient,
+            sender: senderUid,
+            reciepient: reciepientUid,
         }})
     });
 
@@ -59,7 +61,8 @@ io.on('connection', (socket)=> { //this is so cool
     socket.on('remove-friend', (userId, removedId, callback) => {
         console.log(`user ${userId} removed friendId: ${removedId}`);
 
-        socket.broadcast.emit('remove-friend-response', userId, removedId);
+        socket.broadcast.emit('remove-friend-response', removedId);
+
             callback({callback: {
                 status: 'ok',
                 server: 'removed friend',

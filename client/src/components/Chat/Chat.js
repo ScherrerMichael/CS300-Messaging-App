@@ -200,8 +200,7 @@ const Chat = () => {
             {
                 addFriend(modalRef.current.value)
                 .then(res => {
-                    // console.log(res);
-                        socket.emit('add-friend', currentUser, res.data.recipientUid, ({callback}) => {
+                        socket.emit('add-friend', currentUser.uid, res.data.recipientUid, ({callback}) => {
                             // console.log(res.data.result.friends)
                             updateFriends();
                         })
@@ -295,6 +294,7 @@ const Chat = () => {
         }
     }, [`${process.env.REACT_APP_MONGO_DB_PORT}`]);
 
+    //these are the actions done when a socket response is received
     useEffect(() => {
 
         socket.on(`welcome`, (messageBody) => {
@@ -306,10 +306,20 @@ const Chat = () => {
             setMessages(prevMessages => ([...prevMessages, result.message]));
         })
 
-        socket.on('remove-friend-reponse', (userId, removedId) =>{
+        socket.on('add-friend-response', (reciepientUid) => {
+            console.log('added-response', reciepientUid)
+            if(reciepientUid === currentUser.uid)
+            {
+                console.log('a user has added me as a friend :)');
+                updateFriends();
+            }
+        })
+
+        socket.on('remove-friend-response', (removedId) =>{
             if(currentUser.uid === removedId)
             {
-                    console.log('A user removed me as a friend :(')
+                console.log('A user removed me as a friend :(');
+                updateFriends();
             }
         })
 

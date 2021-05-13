@@ -30,7 +30,7 @@ class LeftPanel extends Component {
             <>
                 <Col xs="3" className="contacts debug">
                     <Row className="tab-row">
-                        <Tabs defaultActiveKey={'home'} onSelect={handleTabChange} className="tab-container">
+                        <Tabs defaultActiveKey={'rooms'} onSelect={handleTabChange} className="tab-container">
                             <Tab eventKey={'home'} title={<span><HouseFill className="tab-icon" /> home</span>} className="filled-tab">
                                 {/* home stuff */}
                             </Tab>
@@ -50,6 +50,7 @@ class LeftPanel extends Component {
                                             friendsList = {friendsList}
                                             handleRightClickFriend = {handleRightClickFriend}
                                             handleAcceptPending = {handleAcceptPending}
+                                            handleRemoveFriend = {handleRemoveFriend}
                                         ></PendingListGroup>
                                     </Row>
                                 </Container>
