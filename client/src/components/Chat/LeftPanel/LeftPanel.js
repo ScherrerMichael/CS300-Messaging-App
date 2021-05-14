@@ -36,7 +36,7 @@ class LeftPanel extends Component {
                             </Tab>
                             <Tab eventKey={'people'} title={<span><PersonLinesFill className="tab-icon" /> people</span>} className="filled-tab">
                                 <Container>
-                                    <Row>
+                                    <Row className="friends-list-row">
 
                                     <FriendsListGroup
                                         friendsList = {friendsList}
@@ -45,7 +45,7 @@ class LeftPanel extends Component {
 
                                     </Row>
 
-                                    <Row>
+                                    <Row className="pending-list-row">
                                         <PendingListGroup
                                             friendsList = {friendsList}
                                             handleRightClickFriend = {handleRightClickFriend}

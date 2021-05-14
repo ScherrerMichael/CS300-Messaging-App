@@ -11,6 +11,7 @@ class RightClickFriend extends Component {
         xPos,
         yPos,
         rooms,
+        currentFriend,
         handleMouseLeave,
         handleInviteToRoom,
         setShowRoomToolTip,
@@ -48,7 +49,7 @@ class RightClickFriend extends Component {
                 </ListGroup.Item>
                 </OverlayTrigger>
             </div>
-            <ListGroup.Item action className="list-item-rooms-context" onClick={handleRemoveFriend}>
+            <ListGroup.Item action className="list-item-rooms-context" onClick={(e) => handleRemoveFriend(e, currentFriend.uid)}>
                 remove friend
         </ListGroup.Item>
         </ListGroup> 

@@ -327,6 +327,7 @@ const Chat = () => {
 
     function handleRightClickFriend(e, friend) {
         //TODO: if user is already in room, do not show 'invite to room on menu'
+        console.log(friend)
         e.preventDefault();
 
         setCurrentFriend(friend);
@@ -462,6 +463,7 @@ const Chat = () => {
                         xPos={xPos}
                         yPos={yPos}
                         rooms={rooms}
+                        currentFriend={currentFriend}
                         handleMouseLeave={handleMouseLeave}
                         setShowRoomToolTip={setShowRoomToolTip}
                         handleInviteToRoom={handleInviteToRoom}

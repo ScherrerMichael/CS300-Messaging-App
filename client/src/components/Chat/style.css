@@ -1,7 +1,7 @@
 /* variables */
 :root{
     --header-color: rgb(138, 17, 132);
-    --side-color:  rgb(126, 126, 126);
+    --side-color:  rgb(110, 109, 109);
     --side-hover: rgb(170, 170, 170);
     --middle-color: rgb(77, 77, 77);
     --middle-hover: rgb(85,85,85);
@@ -118,10 +118,7 @@
 }
 
 .friends-divider{
-    position: absolute;
-    bottom: 0;
     border-bottom: var(--tab-default-color) solid;
-    margin-top: 80%;
 }
 
 .list-item-rooms{
@@ -147,12 +144,24 @@
 .menu{
     height: 100%;
     width: 100%;
-    overflow-y: scroll;
+    margin-left: 0px !important;
+    /* overflow-y: scroll; */
+}
+
+.friends-list-row{
+    margin-bottom: 500px;
+}
+
+.pending-list-row{
+
 }
 
 .add-item{
     flex-direction: column;
     align-items: center;
+    position: absolute;
+    bottom: 0;
+    left: 0;
 }
 
 .add-room-btn{
@@ -168,8 +177,7 @@
 
 .chat{
     margin-top: 10px;
-    padding-right: 0;
-    min-width: 60%;
+    min-width: 50%;
 }
 
 
