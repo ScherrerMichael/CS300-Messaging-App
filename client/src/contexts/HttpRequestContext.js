@@ -62,11 +62,11 @@ const { currentUser, signup} = useAuth();
         })
     }
 
-    let postNewRoomFromUser = function(roomName)
+    let postNewRoomFromUser = function(roomName, roomDescription = "")
     {
         return new Promise(function(resolve, reject){
 
-            axios.post(`${process.env.REACT_APP_MONGO_DB_PORT}/rooms/${currentUser.uid}`, {topic: roomName})
+            axios.post(`${process.env.REACT_APP_MONGO_DB_PORT}/rooms/${currentUser.uid}`, {topic: roomName, description: roomDescription,})
             .then(res => {
                 resolve(res);
             })

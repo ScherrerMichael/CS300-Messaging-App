@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import UserHeader from './UserHeader/UserHeader'
 import LeftPanel from './LeftPanel/LeftPanel'
+import RightPanel from './RightPanel/RightPanel';
 import MiddlePanel from './MiddlePanel/MiddlePanel'
 import { PlusSquare, PersonLinesFill, HouseFill, ChatLeftTextFill } from 'react-bootstrap-icons';
 import { useAuth, AuthProvider } from '../../contexts/AuthContext';
@@ -419,43 +420,10 @@ const Chat = () => {
                     messageRef={messageRef}
                 ></MiddlePanel>
 
-                <Col lg="2" className="members">
-                    <Row className="room-details">
-                        <div className="details">{
-                            room ?
-                                <div>
-                                    {/* room info will go here! */}
-                                    {room.topic}
-                                </div> :
-                                <di></di>
-                        }</div>
-                    </Row>
-                    <Row className="member-details">
-                        <ListGroup className="w-100 list-members">
-                            Members
-                            {   
-                                room.owner && room.owner[0]?
-                                <ListGroup.Item action
-                                    className="list-item-rooms"
-                                    key={'owner' + `member-list`}>
-                                    {room.owner[0].user_name}
-                                </ListGroup.Item>:
-                                null
-                            }
+                <RightPanel
+                    room={room}
+                ></RightPanel>
 
-                            {
-                                room.users ?
-                                    room.users.map((u, index) =>
-                                        <ListGroup.Item action
-                                            className="list-item-rooms"
-                                            key={index + `member-list`}>
-                                            {u.user_name}
-                                        </ListGroup.Item>) :
-                                    <div></div>
-                            }
-                        </ListGroup>
-                    </Row>
-                </Col>
             </Row>
             {
                 showFriendOptions ?

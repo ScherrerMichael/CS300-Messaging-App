@@ -61,6 +61,7 @@ router.post('/', (req, res, next) => {
 router.post('/:userId', (req, res, next) => {
     var userId = req.params.userId;
     var roomTopic = req.body.topic;
+    var roomDescription = req.body.description;
     var room;
 
     User.findOne({uid: userId})
@@ -71,6 +72,7 @@ router.post('/:userId', (req, res, next) => {
             _id: new mongoose.Types.ObjectId(),
             owner: doc,
             topic: roomTopic,
+            description: roomDescription,
         });
         room.save()
             .then( result => {
