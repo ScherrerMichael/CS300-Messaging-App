@@ -1,5 +1,6 @@
 {
     "env":{
-        "MONGO_DB_PASSWORD": "1WERMVnkR2RpN7iU"
+        "MONGO_DB_PASSWORD": "1WERMVnkR2RpN7iU",
+        "ENCRYPTION_KEY": "G-KaPdRgUkXp2s5v8y/B?E(H+MbQeThV"
     }
 }
