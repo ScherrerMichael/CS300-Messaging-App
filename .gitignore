@@ -96,8 +96,8 @@ web_modules/
 .env.test
 
 # nodemon  & env variables for server
-.nodemon
-/server/nodemon.js
+.nodemon.json
+
 # parcel-bundler cache (https://parceljs.org/)
 .cache
 .parcel-cache
