@@ -27,7 +27,8 @@ class FriendsListGroup extends Component {
                   onContextMenu={(e) => handleRightClickFriend(e, friend)}
                   key={friend.uid + 'friends'}>
                   {/* TODO: add image of person here */}
-                  {friend.user_name + ', status: ' + friend.status}
+                  {friend.user_name}
+                  {/* the friends status should be 2 */}
                 </ListGroup.Item>)
               :
               <div></div>

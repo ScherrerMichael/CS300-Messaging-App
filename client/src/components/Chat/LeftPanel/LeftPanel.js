@@ -31,9 +31,9 @@ class LeftPanel extends Component {
                 <Col xs="3" className="contacts debug">
                     <Row className="tab-row">
                         <Tabs defaultActiveKey={'rooms'} onSelect={handleTabChange} className="tab-container">
-                            <Tab eventKey={'home'} title={<span><HouseFill className="tab-icon" /> home</span>} className="filled-tab">
+                            {/* <Tab eventKey={'home'} title={<span><HouseFill className="tab-icon" /> home</span>} className="filled-tab"> */}
                                 {/* home stuff */}
-                            </Tab>
+                            {/* </Tab> */}
                             <Tab eventKey={'people'} title={<span><PersonLinesFill className="tab-icon" /> people</span>} className="filled-tab">
                                 <Container>
                                     <Row className="friends-list-row">

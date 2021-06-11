@@ -102,5 +102,5 @@ io.on('connection', (socket)=> { //this is so cool
 })
 
 server.listen(PORT, () =>{
-    console.log(`Server running at 192.168.0.50:${PORT}`);
+    console.log(`Server running on port: ${PORT}`);
 });
